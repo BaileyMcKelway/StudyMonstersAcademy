@@ -1,6 +1,8 @@
 const dotenv = require('dotenv');
 
-dotenv.config({ path: `${process.cwd()}/.${process.env.NODE_ENV.replace(' ', '')}.env`});
+dotenv.config({
+  path: `${process.cwd()}/.${process.env.NODE_ENV.replace(' ', '')}.env`,
+});
 
 module.exports = {
   discordToken: process.env.DISCORD_TOKEN,
@@ -10,5 +12,7 @@ module.exports = {
   postgresUser: process.env.POSTGRES_USER,
   postgresDb: process.env.POSTGRES_DB,
   postgresPassword: process.env.POSTGRES_PASSWORD,
-  forceDbReset: process.env.FORCE_DB_RESET === 'true'
+  forceDbReset: process.env.FORCE_DB_RESET === 'true',
+  openAIKey: process.env.OPENAI_KEY,
+  openAIOrganization: process.env.OPENAI_ORGANIZATION,
 };
