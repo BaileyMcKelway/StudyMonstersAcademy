@@ -1,12 +1,12 @@
 {
-  "name": "slash-bot",
+  "name": "study_monster",
   "version": "1.0.0",
   "description": "a template repo for discord slash commands",
   "main": "./src/index.js",
   "scripts": {
     "start": "cross-env NODE_ENV=dev nodemon src/index.js | pino-pretty -i pid,hostname -t yyyy-mm-dd HH:MM:ss"
   },
-  "author": "slashroot101",
+  "author": "bailey mckelway",
   "license": "ISC",
   "dependencies": {
     "@discordjs/builders": "^0.12.0",
@@ -19,7 +19,8 @@
     "pg": "^8.8.0",
     "pino": "^8.5.0",
     "pino-pretty": "^8.1.0",
-    "sequelize": "^6.25.5"
+    "sequelize": "^6.25.5",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"

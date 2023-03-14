@@ -1,3 +1,20 @@
 const User = require('./User');
+const Essays = require('./Essays');
+const Monster = require('./Monster');
+const Notes = require('./Notes');
 
-module.exports = {User};
+User.hasOne(Monster, { foreignKey: 'user_id' });
+
+User.hasMany(Notes, {
+  foreignKey: {
+    name: 'user_id',
+  },
+});
+
+User.hasMany(Essays, {
+  foreignKey: {
+    name: 'user_id',
+  },
+});
+
+module.exports = { User, Essays, Monster, Notes };

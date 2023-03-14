@@ -1,6 +1,6 @@
 const logger = require('../logger');
 
-module.exports = async (interaction, user) => {
+module.exports = async (interaction) => {
   try {
     if (
       interaction.isButton() &&
@@ -8,6 +8,10 @@ module.exports = async (interaction, user) => {
       interaction?.message?.interaction?.commandName !== 'essay'
     ) {
       return;
+    }
+    console.log('interaction', interaction);
+    if (interaction.commandName === 'react') {
+      console.log('interaction123', interaction);
     }
 
     let command = interaction.client.commands.get(interaction.commandName);
@@ -17,7 +21,7 @@ module.exports = async (interaction, user) => {
         interaction.message.interaction.commandName
       );
     }
-    await command.execute(interaction, user);
+    await command.execute(interaction);
   } catch (err) {
     logger.error(err, 'An error occured executing a command');
   }
