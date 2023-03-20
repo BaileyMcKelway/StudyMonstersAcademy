@@ -1,5 +1,4 @@
 const db = require('../index');
-const { User } = './index';
 const Sequelize = require('sequelize');
 
 class Monster extends Sequelize.Model {
@@ -19,7 +18,7 @@ Monster.init(
       defaultValue: 0,
       allowNull: false,
       validate: {
-        min: 0,
+        max: { args: [1100], msg: 'The maximum value for experience is 1100' },
       },
     },
     memory: {
@@ -27,8 +26,7 @@ Monster.init(
       defaultValue: 0,
       allowNull: false,
       validate: {
-        min: 0,
-        max: 5,
+        max: { args: [5], msg: 'The maximum value for memory is 5' },
       },
     },
     comprehension: {
@@ -36,8 +34,7 @@ Monster.init(
       defaultValue: 0,
       allowNull: false,
       validate: {
-        min: 0,
-        max: 5,
+        max: { args: [5], msg: 'The maximum value for comprehension is 5' },
       },
     },
     type: {
@@ -48,8 +45,7 @@ Monster.init(
       type: Sequelize.DataTypes.INTEGER,
       defaultValue: 0,
       validate: {
-        min: 0,
-        max: 10,
+        max: { args: [10], msg: 'The maximum value for level is 10' },
       },
     },
     knowledge: {

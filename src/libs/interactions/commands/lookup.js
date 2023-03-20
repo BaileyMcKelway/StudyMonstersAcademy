@@ -35,7 +35,7 @@ module.exports = {
               },
               {
                 name: `Experience 📈`,
-                value: `${monster.experience}`,
+                value: `${monster.experience} / ${monster.level * 200 + 100}`,
               },
               {
                 name: `Skill Points`,
@@ -69,10 +69,11 @@ module.exports = {
         ],
       });
     } else if (commandType === 'notes') {
+      const monster = await getMonster(interaction.user);
       const notes = await getNotes(interaction.user);
       const fields = [
         {
-          name: `Space ${notes.length || 0}/3`,
+          name: `Space ${notes.length || 0}/${monster.memory + 3}`,
           value: '',
         },
       ];

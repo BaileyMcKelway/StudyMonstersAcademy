@@ -26,6 +26,10 @@ Notes.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    category: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     ideas: {
       type: DataTypes.TEXT,
       allowNull: false,

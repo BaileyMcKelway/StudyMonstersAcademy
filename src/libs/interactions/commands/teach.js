@@ -26,19 +26,23 @@ const parseQuestionAndAnwser = (inputString) => {
   return outputArray;
 };
 
-const parseSubjectAndIdeas = (inputString) => {
+const parseSubjectCategoryAndIdeas = (inputString) => {
   const lines = inputString.split('\n');
   const result = {
     subject: '',
+    category: '',
     ideaA: '',
     ideaB: '',
   };
   lines.forEach((line) => {
     const matchSubject = line.match(/^Subject: (.+)/);
+    const matchCategory = line.match(/^Category: (.+)/);
     const matchIdeaA = line.match(/^IdeaA: (.+)/);
     const matchIdeaB = line.match(/^IdeaB: (.+)/);
     if (matchSubject) {
       result.subject = matchSubject[1];
+    } else if (matchCategory) {
+      result.category = matchCategory[1];
     } else if (matchIdeaA) {
       result.ideaA = matchIdeaA[1];
     } else if (matchIdeaB) {
@@ -88,13 +92,57 @@ module.exports = {
         await interaction.deferReply({ ephemeral: true });
       }
       const notes = await getNotes(interaction.user);
-      const monster = await getMonster(interaction.user);
+      const { memory, comprehension } = await getMonster(interaction.user);
 
-      if (monster.memory + 3 <= notes.length) {
+      if (memory + 3 <= notes.length) {
         return interaction.editReply(
           'You have the maximum number of notes already created! Time to write an essay!'
         );
       }
+      if (comprehension === 5) {
+        const text = interaction.options.getString('teach_input');
+        const subjectAndMainIdeas = await client.createChatCompletion({
+          model: 'gpt-3.5-turbo',
+          temperature: 0.1,
+          n: 1,
+          messages: subjectAndIdeasMessages(text),
+        });
+
+        const { subject, category, ideaA, ideaB } =
+          parseSubjectCategoryAndIdeas(
+            subjectAndMainIdeas?.data?.choices[0]?.message?.content
+          );
+
+        await createNote({
+          user: interaction.user,
+          text: text,
+          ideas: ideaA + '$$' + ideaB,
+          quality: 100,
+          subject,
+          category,
+        });
+        await interaction.editReply(
+          'Your monster has reached the maximum comprehension level! That means no questions!'
+        );
+
+        await interaction.followUp({
+          content: '',
+          embeds: [
+            {
+              title: 'New Note!',
+              color: 14588438,
+              fields: [
+                {
+                  name: `Quality ${100}%`,
+                  value: '',
+                },
+              ],
+            },
+          ],
+        });
+        return;
+      }
+
       const userId = interaction.user.id;
       const trueAnswerID = `answerTrue_teach_${userId}${interaction.id}`;
       const falseAnswerID = `answerFalse_teach_${userId}${interaction.id}`;
@@ -121,7 +169,7 @@ module.exports = {
 
       const collector = new InteractionCollector(interaction.client, {
         filter,
-        max: 3,
+        max: 5 - comprehension,
         time: 1000 * 60,
       });
 
@@ -162,10 +210,9 @@ module.exports = {
       });
 
       collector.on('end', async (collected, reason) => {
-        console.log('reason123', reason);
-        const lastReply = collected.get(collected.lastKey());
+        const lastReply = await collected.get(collected.lastKey());
         const collectedSize = collected.size;
-        if (lastReply && collectedSize === 3) {
+        if (lastReply && collectedSize === 5 - comprehension) {
           await lastReply.deferReply({ ephemeral: true });
 
           const userQuestions = questionsCache.get(userId);
@@ -176,9 +223,10 @@ module.exports = {
             messages: subjectAndIdeasMessages(userQuestions.text),
           });
 
-          const { subject, ideaA, ideaB } = parseSubjectAndIdeas(
-            subjectAndMainIdeas?.data?.choices[0]?.message?.content
-          );
+          const { subject, category, ideaA, ideaB } =
+            parseSubjectCategoryAndIdeas(
+              subjectAndMainIdeas?.data?.choices[0]?.message?.content
+            );
           const totalCorrect = calculateCorrect(
             collected,
             userQuestions.questions
@@ -190,6 +238,7 @@ module.exports = {
             ideas: ideaA + '$$' + ideaB,
             quality: quality,
             subject,
+            category,
           });
 
           await lastReply.editReply({
@@ -207,9 +256,11 @@ module.exports = {
               },
             ],
           });
-          questionsCache.delete(userId);
+          collector.stop();
         }
+        questionsCache.delete(userId);
       });
+      console.log('questionsCache', questionsCache.get(userId));
     } catch (e) {
       console.log(e);
     }

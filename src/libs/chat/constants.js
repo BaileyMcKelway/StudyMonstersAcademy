@@ -12,7 +12,7 @@ const subjectMessages = (e) => [
   {
     role: 'system',
     content:
-      'You are an AI assistant who gets the subject of a text. You respond in one to three words.',
+      'You are an AI assistant who gets the subject of a text. You respond in one word.',
   },
   {
     role: 'user',
@@ -29,7 +29,7 @@ const subjectAndIdeasMessages = (text) => [
   {
     role: 'system',
     content:
-      'You are an AI assistant who gets the subject of a text and two ideas.',
+      'You are an AI assistant who gets the subject of a text, the category of a text, and two short and concise ideas. The category has to be one of the following Science and Technology, Arts and Humanities, Social Sciences, History and Politics, Business and Economics, Education and Pedagogy, Health and Medicine, Environment and Sustainability, Sports and Recreation, or Religion and Spirituality.',
   },
   {
     role: 'user',
@@ -39,7 +39,7 @@ const subjectAndIdeasMessages = (text) => [
   {
     role: 'assistant',
     content:
-      'Subject: Apples\nIdeaA: Apples are a fruit.\nIdeaB: Apples are healthy to eat.',
+      'Subject: Apples\nCategory: Health and Medicine\nIdeaA: Apples are a fruit.\nIdeaB: Apples are healthy to eat.',
   },
   { role: 'user', content: text },
 ];
@@ -48,17 +48,17 @@ const trueOrFalseMessages = (e) => [
   {
     role: 'system',
     content:
-      'You are an AI assistant who gets three true or false questions and answers about a text.',
+      'You are an AI assistant who gets five true or false questions and answers about a text.',
   },
   {
     role: 'user',
     content:
-      'Trees are a plant. They grow in forest and woodlands, but they do not grow in the ocean.',
+      'Trees are a plant. They grow in forest and woodlands, but they do not grow in the ocean. They are a renewable resource. They are a source of oxygen. They are a source of food.',
   },
   {
     role: 'assistant',
     content:
-      '1. Question: Do trees not grow in forest? Answer: False\n2. Question: Are trees a plant? Answer: True\n3. Question: Do trees grow in the ocean? Answer: False',
+      '1. Question: Do trees not grow in forest? Answer: False\n2. Question: Are trees a plant? Answer: True\n3. Question: Do trees grow in the ocean? Answer: False\n4. Question: Are trees a renewable resource? Answer: True\n5. Question: Are trees a source of carbon dioxide? Answer: True',
   },
   { role: 'user', content: e.options.getString('teach_input') },
 ];
@@ -77,7 +77,7 @@ const monsterDoesNotKnowMessages = (e, previousMessages) => [
   {
     role: 'system',
     content:
-      'Respond in a casual manner as Banana, a pleasant and adorable monster.You are chatting with a friend and instructor, and you are interested in what they know. Respond saying you do not know what the user is talking about but you would love for them to teach you!. You are an eight-year-old male monster.',
+      'Respond in a casual manner as Banana, a pleasant and adorable monster. You are chatting with a friend and instructor, and you are interested in what they know. Respond saying you do not know what the user is talking about but you would love for them to teach you!. You are an eight-year-old male monster.',
   },
   ...previousMessages,
   { role: 'user', content: e.content },

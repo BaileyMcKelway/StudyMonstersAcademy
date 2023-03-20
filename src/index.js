@@ -6,12 +6,7 @@ const {
 } = require('discord.js');
 const logger = require('./libs/logger');
 const { discordToken, forceDbReset } = require('./libs/config');
-const {
-  ready,
-  interactionCreate,
-  messageCreate,
-  messageReactionAdd,
-} = require('./libs/events');
+const { ready, interactionCreate, messageCreate } = require('./libs/events');
 const initializeInteractions = require('./libs/interactions/init/initializeInteractions');
 const db = require('./libs/database');
 const models = require('./libs/database/models');
@@ -47,7 +42,6 @@ client.commands = new Collection();
   client.on('ready', ready);
   client.on('interactionCreate', interactionCreate);
   client.on('messageCreate', messageCreate);
-  client.on('messageReactionAdd', messageReactionAdd);
 
   logger.info('Authenticating with Discord');
   await client.login(discordToken);

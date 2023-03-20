@@ -5,6 +5,12 @@ const {
 } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const {
+  client,
+  trueOrFalseMessages,
+  subjectAndIdeasMessages,
+} = require('../../chat/constants');
+const essaySkeletons = require('../../essayStructure/constants');
+const {
   getNotes,
   getMonster,
   createEssay,
@@ -21,19 +27,19 @@ const calculateExperienceGained = (notes) => {
       return acc + curr.quality / 100;
     }, 0) / notes.length;
 
-  return Math.floor(100 * avgQuality);
+  return Math.floor(avgQuality * 100);
 };
 
-const handleMonsterExperience = async (
+const handleMonsterExperience = async ({
   interaction,
   gainedExperience,
-  noteTitles
-) => {
+  noteTitles,
+}) => {
   const { level, experience, knowledge, memory, comprehension } =
     await getMonster(interaction.user);
   const knowledgeArray = knowledge.split(',');
   noteTitles = noteTitles.map((note) => note.toLowerCase());
-  const newKnowledge = [...new Set([...knowledgeArray, ...noteTitles])].join(
+  const newKnowledge = [...new Set([...noteTitles, ...knowledgeArray])].join(
     ','
   );
 
@@ -59,6 +65,52 @@ const handleMonsterExperience = async (
   };
 };
 
+const getUniqueSubjects = (notes) => {
+  let uniqueSubjects = notes.filter((item, index) => {
+    return index === notes.findIndex((obj) => obj.subject === item.subject);
+  });
+
+  let counter = 0;
+  while (uniqueSubjects.length < 3) {
+    if (
+      uniqueSubjects.findIndex((obj) => obj.id === notes[counter].id) === -1
+    ) {
+      uniqueSubjects.push(notes[counter]);
+    }
+    counter++;
+  }
+  return uniqueSubjects.slice(0, 3);
+};
+
+const cleanNoteTitles = (interaction) => {
+  const noteTitles = interaction.options.getString('essay_input').split(',');
+  return noteTitles.map((str) => {
+    if (typeof str === 'string') {
+      return str.trim().slice(0, 1) === ' ' ? str.trim().slice(1) : str.trim();
+    } else {
+      return str;
+    }
+  });
+};
+
+const createNotesArray = (notes, mainNote) => {
+  notes = notes.map((note) => note.dataValues);
+  const mainNoteObject = notes.find((note) => note.subject === mainNote);
+  const otherNotes = notes.filter((note) => note.subject !== mainNote);
+  return [mainNoteObject, ...otherNotes];
+};
+
+const handleTopics = (notes) => {
+  return notes.map((note) => {
+    const ideas = note.ideas.split('$$');
+    const noteObject = {
+      subject: note.subject,
+      ideaA: ideas[0],
+      ideaB: ideas[1],
+    };
+    return noteObject;
+  });
+};
 const essayCache = new Map();
 
 module.exports = {
@@ -76,19 +128,7 @@ module.exports = {
       const userId = interaction.user.id;
       if (isSlashCmd(interaction)) {
         await interaction.deferReply({ ephemeral: true });
-
-        let noteTitles = interaction.options
-          .getString('essay_input')
-          .split(',');
-        noteTitles = noteTitles.map((str) => {
-          if (typeof str === 'string') {
-            return str.trim().slice(0, 1) === ' '
-              ? str.trim().slice(1)
-              : str.trim();
-          } else {
-            return str;
-          }
-        });
+        const noteTitles = cleanNoteTitles(interaction);
 
         if (noteTitles.length > 3) {
           await interaction.editReply({
@@ -105,17 +145,16 @@ module.exports = {
         }
 
         let notes = await getNotes(interaction.user, noteTitles);
-        console.log('notes123', notes);
         if (notes.length < 3) {
           await interaction.editReply({
             content: 'Hmmm looks like one of the notes is missing',
           });
           return;
         }
-
-        notes = notes.map((note) => {
-          return note.dataValues;
-        });
+        notes = createNotesArray(notes, noteTitles[0]);
+        if (notes.length > 3) {
+          notes = getUniqueSubjects(notes);
+        }
 
         if (essayCache.has(userId)) {
           essayCache.delete(userId);
@@ -168,11 +207,41 @@ module.exports = {
         }
       });
 
-      collector.on('end', async (collected, reason) => {
+      collector.on('end', async (collected) => {
         const lastReply = collected.get(collected.lastKey());
         if (lastReply && collected.size === 3) {
+          await lastReply.deferReply({ ephemeral: true });
           const notes = essayCache.get(userId);
+          const topics = handleTopics(notes.notes);
+          const currentEssaySkeleton =
+            essaySkeletons[topics[1].category] || essaySkeletons.default;
+          const essay = currentEssaySkeleton(
+            0,
+            topics[0],
+            topics[1],
+            topics[2]
+          );
+
+          console.log('essay123123', essay);
+          const response = await client.createCompletion({
+            model: 'text-davinci-003',
+            prompt: `Rewrite this text below in colloquial tone:\n\n ${essay.title} ${essay.text}`,
+            temperature: 0.61,
+            max_tokens: 1670,
+            top_p: 1,
+            frequency_penalty: 0,
+            presence_penalty: 0,
+          });
+          console.log('response123', response?.data);
+          lastReply.editReply(essay.title);
+          const cleanedEssay = response?.data?.choices[0]?.text.replace(
+            /\n/g,
+            ''
+          );
+          console.log('cleanedEssay123', cleanedEssay);
+          lastReply.followUp(cleanedEssay);
           const noteTitles = notes.notes.map((note) => note.subject);
+          const noteIds = notes.notes.map((note) => note.id);
           const gainedExperience = calculateExperienceGained(notes.notes);
           const {
             hasLeveledUp,
@@ -181,23 +250,26 @@ module.exports = {
             comprehension,
             level,
             experience,
-          } = await handleMonsterExperience(
+          } = await handleMonsterExperience({
             interaction,
             gainedExperience,
-            noteTitles
-          );
+            noteTitles,
+          });
 
-          await createEssay(interaction.user, 'EXAMPLE ESSAY');
-          await deleteNotes(interaction.user, noteTitles);
+          await createEssay(
+            interaction.user,
+            essay.title + '\n\n' + cleanedEssay
+          );
+          await deleteNotes(interaction.user, noteIds);
 
           if (hasLeveledUp) {
-            await lastReply.reply(
-              `Oh wow you leveled up to level ${level + 1} after gaining ${
-                gainedExperience + experience
-              } experience! You currently have ${memory} memory🧠 and ${comprehension} comprehension🤔. Which do you want to increase?`
+            await lastReply.followUp(
+              `Oh wow you leveled up to level ${
+                level + 1
+              } after gaining ${gainedExperience} experience! You currently have ${memory} memory🧠 and ${comprehension} comprehension🤔. Which do you want to increase?`
             );
           } else {
-            await lastReply.reply(
+            await lastReply.followUp(
               `What a fantastic essay! I now know about ${noteTitles.join(
                 ', '
               )} and have gained ${gainedExperience} experience! ${
@@ -205,7 +277,7 @@ module.exports = {
               } more experience points until I level up to level ${level + 1}!`
             );
           }
-
+          collector.stop();
           essayCache.delete(userId);
         }
       });

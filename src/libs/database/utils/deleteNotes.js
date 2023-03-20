@@ -2,14 +2,14 @@ const { Notes } = require('../models');
 const { Op } = require('sequelize');
 const logger = require('../../logger');
 
-module.exports = async (user, noteTitles) => {
+module.exports = async (user, noteIds) => {
   logger.info(`Deleting notes [user_id=${user.id}]`);
 
   try {
     const notes = await Notes.destroy({
       where: {
         user_id: user.id,
-        subject: { [Op.in]: noteTitles },
+        id: { [Op.in]: noteIds },
       },
     });
 
