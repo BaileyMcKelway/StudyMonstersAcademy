@@ -4,7 +4,7 @@ const {
   monsterDoesNotKnowMessages,
   subjectMessages,
 } = require('../chat/constants');
-
+const Fuse = require('fuse.js');
 const logger = require('../logger');
 const { getMonster, createUser, updateMonster } = require('../database/utils');
 
@@ -14,15 +14,84 @@ const createWhatMonsterKnowsArray = (monster) => {
   return knowledge.split(',');
 };
 
-const monsterKnows = (thingsMonsterKnows, subjectResponse) => {
-  const subject = subjectResponse.data.choices[0].message.content
-    .replace('Subject: ', '')
-    .toLowerCase();
-  console.log('subject123', subject);
-  if (subject.indexOf('none') === 0) {
-    return true;
+const options = {
+  includeScore: true,
+  shouldSort: true,
+  location: 0,
+  distance: 100,
+  maxPatternLength: 32,
+  minMatchCharLength: 1,
+};
+
+const createSubjectObject = (subjectResponse) => {
+  subjectResponse = subjectResponse.data.choices[0].message.content;
+  const lines = subjectResponse.split('\n');
+  const result = {
+    main: '',
+    a: '',
+    b: '',
+  };
+
+  lines.forEach((line) => {
+    const matchMainSubject = line.match(/^TopicA: (.+)/);
+    const matchSubjectA = line.match(/^TopicB: (.+)/);
+    const matchSubjectB = line.match(/^TopicC: (.+)/);
+    if (matchMainSubject) {
+      result.main = matchMainSubject[1].toLowerCase();
+    } else if (matchSubjectA) {
+      result.a = matchSubjectA[1].toLowerCase();
+    } else if (matchSubjectB) {
+      result.b = matchSubjectB[1].toLowerCase();
+    }
+  });
+  return result;
+};
+
+const monsterKnows = (defaultKnowledge, knowledge, subjectResponse) => {
+  const { main, a, b } = subjectResponse;
+
+  const fuse = new Fuse(knowledge, options);
+  const result = { main: false, a: false, b: false };
+  const resultsMain = fuse.search(main);
+  console.log('resultsMain', resultsMain);
+  if (
+    (resultsMain.length > 0 && resultsMain[0].score <= 0.3) ||
+    main.indexOf('none') === 0 ||
+    defaultKnowledge.includes(main)
+  ) {
+    result.main = true;
+  } else {
+    result.main = false;
   }
-  return thingsMonsterKnows.includes(subject);
+
+  const resultsA = fuse.search(a);
+  console.log('resultsA', resultsA);
+  if (resultsA.length > 0 && resultsA[0].score <= 0.3) {
+    result.a = true;
+  } else {
+    result.a = false;
+  }
+
+  const resultsB = fuse.search(b);
+  console.log('resultsB', resultsB);
+  if (resultsB.length > 0 && resultsB[0].score <= 0.3) {
+    result.b = true;
+  } else {
+    result.b = false;
+  }
+
+  const knows = [];
+  const doesNotKnow = [];
+
+  for (let key in result) {
+    if (result[key]) {
+      knows.push(subjectResponse[key]);
+    } else {
+      doesNotKnow.push(subjectResponse[key]);
+    }
+  }
+
+  return { knows, doesNotKnow };
 };
 
 const createMessageHistory = (previousMessages) => {
@@ -32,7 +101,7 @@ const createMessageHistory = (previousMessages) => {
 
   const previousMessagesArr = Array.from(previousMessages.values());
   for (let i = previousMessagesArr.length - 1; i >= 0; i--) {
-    if (res.length === 2) break;
+    if (res.length === 4) break;
     const curr = previousMessagesArr[i];
     isUser = curr.author.bot !== true;
     if (!isUser && roleToPush === 'bot') {
@@ -53,6 +122,9 @@ const createMessageHistory = (previousMessages) => {
 };
 
 const defaultKnowledge = [
+  'essay',
+  'learn',
+  'learning',
   'help',
   'no subject detected',
   'no subject detected.',
@@ -126,43 +198,68 @@ module.exports = async (event) => {
   const dmChannel = await event.author.createDM();
   dmChannel.sendTyping();
   const knowledge = createWhatMonsterKnowsArray(monster);
-  const thingsMonsterKnows = [...defaultKnowledge, ...knowledge];
 
   try {
-    console.log('STARTING CHAT COMPLETION', event);
+    console.log('STARTING SUBJECT');
 
     const subjectResponse = await client.createChatCompletion({
       model: 'gpt-3.5-turbo',
-      temperature: 0.1,
+      temperature: 0.01,
       n: 1,
       messages: subjectMessages(event),
     });
-    console.log('ENDING CHAT COMPLETION');
+    const subjects = createSubjectObject(subjectResponse);
+    console.log('ENDING SUBJECT');
     const channel = event.channel;
-    const messages = await channel.messages.fetch({ limit: 5 });
 
-    if (monsterKnows(thingsMonsterKnows, subjectResponse)) {
-      console.log('monster knows');
+    // Collect more messages
+    const messages = await channel.messages.fetch({ limit: 10 });
+
+    // Match for default subject
+    // Match for main subject
+    // Match for supporting subject
+    // Most recently used subject if time is less than 1 minute
+    // Does not know subject
+    const doesMonsterKnow = monsterKnows(defaultKnowledge, knowledge, subjects);
+    console.log('doesMonsterKnow', doesMonsterKnow);
+    if (doesMonsterKnow.knows.length !== 0) {
+      console.log(
+        'STARTING KNOWS',
+        monsterMessages(event, createMessageHistory(messages), doesMonsterKnow)
+      );
+
       const chatResponse = await client.createChatCompletion({
         model: 'gpt-3.5-turbo',
-        temperature: 0.9,
+        temperature: 0.7,
         n: 1,
-        messages: monsterMessages(event, createMessageHistory(messages)),
+        messages: monsterMessages(
+          event,
+          createMessageHistory(messages),
+          doesMonsterKnow
+        ),
       });
-      console.log('chatResponse123', chatResponse);
+      console.log('ENDING KNOWS', chatResponse.data);
       event.reply(chatResponse.data.choices[0].message);
     } else {
-      console.log('monster does not know');
+      console.log(
+        'STARTING DOES NOT KNOW',
+        monsterDoesNotKnowMessages(
+          event,
+          createMessageHistory(messages),
+          doesMonsterKnow
+        )
+      );
       const chatResponse = await client.createChatCompletion({
         model: 'gpt-3.5-turbo',
-        temperature: 0.9,
+        temperature: 0.7,
         n: 1,
         messages: monsterDoesNotKnowMessages(
           event,
-          createMessageHistory(messages)
+          createMessageHistory(messages),
+          doesMonsterKnow
         ),
       });
-      console.log('chatResponse123', chatResponse);
+      console.log('ENDING  DOES NOT  KNOW', chatResponse.data);
       event.reply(chatResponse.data.choices[0].message);
     }
   } catch (e) {

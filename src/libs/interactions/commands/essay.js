@@ -104,7 +104,8 @@ const handleTopics = (notes) => {
   return notes.map((note) => {
     const ideas = note.ideas.split('$$');
     const noteObject = {
-      subject: note.subject,
+      subject: note.subject.toLowerCase(),
+      category: note.category,
       ideaA: ideas[0],
       ideaB: ideas[1],
     };
@@ -213,8 +214,9 @@ module.exports = {
           await lastReply.deferReply({ ephemeral: true });
           const notes = essayCache.get(userId);
           const topics = handleTopics(notes.notes);
+
           const currentEssaySkeleton =
-            essaySkeletons[topics[1].category] || essaySkeletons.default;
+            essaySkeletons[topics[0].category] || essaySkeletons.default;
           const essay = currentEssaySkeleton(
             0,
             topics[0],
@@ -225,7 +227,7 @@ module.exports = {
           console.log('essay123123', essay);
           const response = await client.createCompletion({
             model: 'text-davinci-003',
-            prompt: `Rewrite this text below in colloquial tone:\n\n ${essay.title} ${essay.text}`,
+            prompt: `Rewrite this text below in colloquial tone and fix spelling:\n\n ${essay.title}\n\n ${essay.text}`,
             temperature: 0.61,
             max_tokens: 1670,
             top_p: 1,
