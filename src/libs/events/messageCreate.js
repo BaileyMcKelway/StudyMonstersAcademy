@@ -5,13 +5,14 @@ const {
   subjectMessages,
 } = require('../chat/constants');
 const Fuse = require('fuse.js');
+const cosineSimilarity = require('compute-cosine-similarity');
 const logger = require('../logger');
 const { getMonster, createUser, updateMonster } = require('../database/utils');
 
 const isBot = (event) => event.author.bot === true;
 const createWhatMonsterKnowsArray = (monster) => {
   const knowledge = monster.knowledge;
-  return knowledge.split(',');
+  return knowledge.split(',').filter((item) => item !== '');
 };
 
 const options = {
@@ -91,31 +92,31 @@ const monsterKnows = (defaultKnowledge, knowledge, subjectResponse) => {
     }
   }
 
-  return { knows, doesNotKnow };
+  const knowsString = knows.join(' and ');
+
+  const doesNotKnowString = doesNotKnow
+    .filter((ele) => ele !== 'none')
+    .join(' or ');
+  return { knows, doesNotKnow, doesNotKnowString, knowsString };
 };
 
 const createMessageHistory = (previousMessages) => {
   let res = [];
-  let isUser = null;
-  let roleToPush = 'user';
 
   const previousMessagesArr = Array.from(previousMessages.values());
   for (let i = previousMessagesArr.length - 1; i >= 0; i--) {
-    if (res.length === 4) break;
     const curr = previousMessagesArr[i];
-    isUser = curr.author.bot !== true;
-    if (!isUser && roleToPush === 'bot') {
+    const isUser = curr.author.bot !== true;
+    if (!isUser) {
       res.push({
         role: 'assistant',
         content: curr.content,
       });
-      roleToPush = 'user';
-    } else if (isUser && roleToPush === 'user') {
+    } else {
       res.push({
         role: 'user',
         content: curr.content,
       });
-      roleToPush = 'bot';
     }
   }
   return res;
@@ -201,31 +202,52 @@ module.exports = async (event) => {
 
   try {
     console.log('STARTING SUBJECT');
-
-    const subjectResponse = await client.createChatCompletion({
-      model: 'gpt-3.5-turbo',
-      temperature: 0.01,
-      n: 1,
-      messages: subjectMessages(event),
+    const embeddingResults = await client.createEmbedding({
+      model: 'text-embedding-ada-002',
+      input: [event.content, ...knowledge],
     });
-    const subjects = createSubjectObject(subjectResponse);
-    console.log('ENDING SUBJECT');
+
+    const embeddings = embeddingResults.data.data.map(
+      (entry) => entry.embedding
+    );
+    const userEmbeding = embeddings[0];
+    const knowledgeEmbeddings = embeddings.slice(1);
+    const knowledgeEmbeddingsObject = knowledge.map((ele, i) => {
+      return {
+        subject: ele,
+        embeding: knowledgeEmbeddings[i],
+      };
+    });
+
+    let ranked = [];
+
+    for (let i = 0; i < knowledgeEmbeddingsObject.length; i++) {
+      const knowledgeEmbedding = knowledgeEmbeddingsObject[i];
+      const similarity = cosineSimilarity(
+        knowledgeEmbedding.embeding,
+        userEmbeding
+      );
+      ranked.push({
+        subject: knowledgeEmbedding.subject,
+        similarity: similarity,
+      });
+    }
+    ranked = ranked.sort((a, b) => (b.similarity > a.similarity ? 1 : -1));
+    console.log('ranked123', ranked);
+
     const channel = event.channel;
-
-    // Collect more messages
     const messages = await channel.messages.fetch({ limit: 10 });
+    console.log(messages, 'MESSAGES');
 
-    // Match for default subject
-    // Match for main subject
-    // Match for supporting subject
-    // Most recently used subject if time is less than 1 minute
-    // Does not know subject
-    const doesMonsterKnow = monsterKnows(defaultKnowledge, knowledge, subjects);
-    console.log('doesMonsterKnow', doesMonsterKnow);
     if (doesMonsterKnow.knows.length !== 0) {
       console.log(
         'STARTING KNOWS',
-        monsterMessages(event, createMessageHistory(messages), doesMonsterKnow)
+        monsterMessages(
+          event,
+          createMessageHistory(messages),
+          doesMonsterKnow.doesNotKnowString,
+          doesMonsterKnow.knowsString
+        )
       );
 
       const chatResponse = await client.createChatCompletion({
@@ -246,7 +268,7 @@ module.exports = async (event) => {
         monsterDoesNotKnowMessages(
           event,
           createMessageHistory(messages),
-          doesMonsterKnow
+          doesMonsterKnow.doesNotKnowString
         )
       );
       const chatResponse = await client.createChatCompletion({
