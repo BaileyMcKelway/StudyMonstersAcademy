@@ -14,7 +14,7 @@
     "axios": "^0.27.2",
     "compute-cosine-similarity": "^1.0.0",
     "cross-env": "^7.0.3",
-    "discord.js": "^14.7.1",
+    "discord.js": "14.8.0",
     "dotenv": "^16.0.2",
     "fuse.js": "^6.6.2",
     "list.js": "^2.3.1",

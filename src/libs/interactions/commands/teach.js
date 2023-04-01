@@ -15,6 +15,7 @@ const isSlashCmd = (interaction) => interaction.type === 2;
 const isNotBot = (m) => m?.author?.bot !== true;
 
 const parseQuestionAndAnwser = (inputString) => {
+  console.log('inputString123', inputString);
   const pairs = inputString.split(/\d+\. /).slice(1);
 
   const outputArray = pairs.map((pair) => {

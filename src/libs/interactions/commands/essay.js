@@ -8,6 +8,7 @@ const {
   client,
   trueOrFalseMessages,
   subjectAndIdeasMessages,
+  essayCreation,
 } = require('../../chat/constants');
 const essaySkeletons = require('../../essayStructure/constants');
 const {
@@ -30,13 +31,35 @@ const calculateExperienceGained = (notes) => {
   return Math.floor(avgQuality * 100);
 };
 
+const createMonsterMetaData = async (
+  metadata,
+  noteTitles,
+  essayTitle,
+  essaySubject
+) => {
+  const parsedMetaData = await JSON.parse(metadata);
+  parsedMetaData[noteTitles[0]] = { title: essayTitle, subject: essaySubject };
+  parsedMetaData[noteTitles[1]] = { title: essayTitle, subject: essaySubject };
+  parsedMetaData[noteTitles[2]] = { title: essayTitle, subject: essaySubject };
+  console.log('parsedMetaData123', parsedMetaData);
+  return parsedMetaData;
+};
+
 const handleMonsterExperience = async ({
   interaction,
   gainedExperience,
   noteTitles,
 }) => {
-  const { level, experience, knowledge, memory, comprehension } =
+  const { level, experience, knowledge, memory, comprehension, metadata } =
     await getMonster(interaction.user);
+
+  const newMetaData = await createMonsterMetaData(
+    metadata,
+    noteTitles,
+    'TEST TITLE',
+    'TEST SUBJECT'
+  );
+
   const knowledgeArray = knowledge.split(',');
   noteTitles = noteTitles.map((note) => note.toLowerCase());
   const newKnowledge = [...new Set([...noteTitles, ...knowledgeArray])].join(
@@ -53,6 +76,7 @@ const handleMonsterExperience = async ({
     level,
     hasLeveledUp,
     newKnowledge,
+    newMetaData,
   });
 
   return {
@@ -62,6 +86,7 @@ const handleMonsterExperience = async ({
     comprehension,
     level,
     experience,
+    newMetaData,
   };
 };
 
@@ -112,6 +137,11 @@ const handleTopics = (notes) => {
     return noteObject;
   });
 };
+
+const createEssayPrompt = (essayTitle, topics) => {
+  return `Write a funny short essay titled "${essayTitle}" Only using the main ideas below,\n\nIdea: ${topics[0].ideaA}\nIdea:  ${topics[0].ideaB}\nIdea: ${topics[1].ideaA}\nIdea:  ${topics[1].ideaB}\nIdea: ${topics[2].ideaA}\nIdea:  ${topics[2].ideaB}\n\n Return the title, essay, and main idea \n\nTitle:`;
+};
+
 const essayCache = new Map();
 
 module.exports = {
@@ -126,163 +156,91 @@ module.exports = {
     ),
   async execute(interaction) {
     try {
+      await interaction.deferReply({ ephemeral: true });
       const userId = interaction.user.id;
-      if (isSlashCmd(interaction)) {
-        await interaction.deferReply({ ephemeral: true });
-        const noteTitles = cleanNoteTitles(interaction);
 
-        if (noteTitles.length > 3) {
-          await interaction.editReply({
-            content: 'You entered to many notes!',
-          });
-          return;
-        }
-        if (noteTitles.length < 3) {
-          await interaction.editReply({
-            content:
-              'You did not enter enough notes for me to create an essay!',
-          });
-          return;
-        }
+      const noteTitles = cleanNoteTitles(interaction);
 
-        let notes = await getNotes(interaction.user, noteTitles);
-        if (notes.length < 3) {
-          await interaction.editReply({
-            content: 'Hmmm looks like one of the notes is missing',
-          });
-          return;
-        }
-        notes = createNotesArray(notes, noteTitles[0]);
-        if (notes.length > 3) {
-          notes = getUniqueSubjects(notes);
-        }
-
-        if (essayCache.has(userId)) {
-          essayCache.delete(userId);
-        }
-        essayCache.set(userId, {
-          notes: notes,
-        });
-      }
-      const questionUp = new ButtonBuilder()
-        .setCustomId(`questionUp_essay_${userId}${interaction.id}`)
-        .setLabel('Yes')
-        .setEmoji('👍')
-        .setStyle('Primary');
-
-      const questionDown = new ButtonBuilder()
-        .setCustomId(`questionDown_essay_${userId}${interaction.id}`)
-        .setLabel('No')
-        .setEmoji('👎')
-        .setStyle('Primary');
-
-      const row = new ActionRowBuilder().addComponents(
-        questionUp,
-        questionDown
-      );
-
-      const filter = (m) =>
-        (m.customId === `questionUp_essay_${userId}${interaction.id}` ||
-          m.customId === `questionDown_essay_${userId}${interaction.id}`) &&
-        m.user.id === userId;
-
-      const collector = new InteractionCollector(interaction.client, {
-        filter,
-        max: 3,
-        time: 1000 * 60,
-      });
-
-      if (isSlashCmd(interaction)) {
+      if (noteTitles.length > 3) {
         await interaction.editReply({
-          content: 'test0',
-          components: [row],
+          content: 'You entered to many notes!',
         });
+        return;
       }
-      collector.on('collect', async (m) => {
-        if (isNotBot(m) && !collector.checkEnd()) {
-          await m.reply({
-            content: 'test' + collector.total,
-            components: [row],
-          });
-          return;
-        }
+      if (noteTitles.length < 3) {
+        await interaction.editReply({
+          content: 'You did not enter enough notes for me to create an essay!',
+        });
+        return;
+      }
+
+      let notes = await getNotes(interaction.user, noteTitles);
+      if (notes.length < 3) {
+        await interaction.editReply({
+          content: 'Hmmm looks like one of the notes is missing',
+        });
+        return;
+      }
+      notes = createNotesArray(notes, noteTitles[0]);
+      console.log('notes123', notes);
+      if (notes.length > 3) {
+        notes = getUniqueSubjects(notes);
+      }
+
+      const topics = handleTopics(notes);
+
+      const currentEssaySkeleton =
+        essaySkeletons[topics[0].category] || essaySkeletons.default;
+      const essayTitle = currentEssaySkeleton(topics[0], topics[1], topics[2]);
+
+      const essayPrompt = createEssayPrompt(essayTitle, topics);
+      const response = await client.createCompletion({
+        model: 'text-davinci-003',
+        prompt: essayCreation(essayPrompt),
+        temperature: 0.97,
+        max_tokens: 589,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0,
+      });
+      interaction.editReply(response?.data?.choices[0].text);
+      const noteIds = notes.map((note) => note.id);
+      const gainedExperience = calculateExperienceGained(notes);
+
+      const {
+        hasLeveledUp,
+        totalLevelExperience,
+        memory,
+        comprehension,
+        level,
+        experience,
+      } = await handleMonsterExperience({
+        interaction,
+        gainedExperience,
+        noteTitles,
       });
 
-      collector.on('end', async (collected) => {
-        const lastReply = collected.get(collected.lastKey());
-        if (lastReply && collected.size === 3) {
-          await lastReply.deferReply({ ephemeral: true });
-          const notes = essayCache.get(userId);
-          const topics = handleTopics(notes.notes);
+      await createEssay(
+        interaction.user,
+        essayTitle + '\n\n' + response?.data?.choices[0].text
+      );
+      await deleteNotes(interaction.user, noteIds);
 
-          const currentEssaySkeleton =
-            essaySkeletons[topics[0].category] || essaySkeletons.default;
-          const essay = currentEssaySkeleton(
-            0,
-            topics[0],
-            topics[1],
-            topics[2]
-          );
-
-          console.log('essay123123', essay);
-          const response = await client.createCompletion({
-            model: 'text-davinci-003',
-            prompt: `Rewrite this text below in colloquial tone and fix spelling:\n\n ${essay.title}\n\n ${essay.text}`,
-            temperature: 0.61,
-            max_tokens: 1670,
-            top_p: 1,
-            frequency_penalty: 0,
-            presence_penalty: 0,
-          });
-          console.log('response123', response?.data);
-          lastReply.editReply(essay.title);
-          const cleanedEssay = response?.data?.choices[0]?.text.replace(
-            /\n/g,
-            ''
-          );
-          console.log('cleanedEssay123', cleanedEssay);
-          lastReply.followUp(cleanedEssay);
-          const noteTitles = notes.notes.map((note) => note.subject);
-          const noteIds = notes.notes.map((note) => note.id);
-          const gainedExperience = calculateExperienceGained(notes.notes);
-          const {
-            hasLeveledUp,
-            totalLevelExperience,
-            memory,
-            comprehension,
-            level,
-            experience,
-          } = await handleMonsterExperience({
-            interaction,
-            gainedExperience,
-            noteTitles,
-          });
-
-          await createEssay(
-            interaction.user,
-            essay.title + '\n\n' + cleanedEssay
-          );
-          await deleteNotes(interaction.user, noteIds);
-
-          if (hasLeveledUp) {
-            await lastReply.followUp(
-              `Oh wow you leveled up to level ${
-                level + 1
-              } after gaining ${gainedExperience} experience! You currently have ${memory} memory🧠 and ${comprehension} comprehension🤔. Which do you want to increase?`
-            );
-          } else {
-            await lastReply.followUp(
-              `What a fantastic essay! I now know about ${noteTitles.join(
-                ', '
-              )} and have gained ${gainedExperience} experience! ${
-                totalLevelExperience - (gainedExperience + experience)
-              } more experience points until I level up to level ${level + 1}!`
-            );
-          }
-          collector.stop();
-          essayCache.delete(userId);
-        }
-      });
+      if (hasLeveledUp) {
+        await interaction.followUp(
+          `Oh wow you leveled up to level ${
+            level + 1
+          } after gaining ${gainedExperience} experience!`
+        );
+      } else {
+        await interaction.followUp(
+          `What a fantastic essay! I now know about ${noteTitles.join(
+            ', '
+          )} and have gained ${gainedExperience} experience! ${
+            totalLevelExperience - (gainedExperience + experience)
+          } more experience points until I level up to level ${level + 1}!`
+        );
+      }
     } catch (e) {
       console.log(e);
     }

@@ -9,12 +9,20 @@ module.exports = async ({
   hasLeveledUp,
   newKnowledge,
   skill,
+  newMetaData,
 }) => {
   logger.info(`Updating monster [user_id=${user.id}]`);
   try {
     if (hasLeveledUp) {
+      const metadata = JSON.stringify(newMetaData);
+      console.log('metadata123123', metadata, newMetaData);
       await Monster.update(
-        { experience: exp, level: level + 1, knowledge: newKnowledge },
+        {
+          experience: exp,
+          level: level + 1,
+          knowledge: newKnowledge,
+          metadata,
+        },
         { where: { user_id: user.id } }
       );
     } else if (skill) {
@@ -30,8 +38,10 @@ module.exports = async ({
         );
       }
     } else {
+      const metadata = JSON.stringify(newMetaData);
+      console.log('metadata123123', metadata, newMetaData);
       await Monster.update(
-        { experience: exp, knowledge: newKnowledge },
+        { experience: exp, knowledge: newKnowledge, metadata },
         { where: { user_id: user.id } }
       );
     }

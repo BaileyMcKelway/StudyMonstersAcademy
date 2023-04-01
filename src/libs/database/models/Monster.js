@@ -53,6 +53,11 @@ Monster.init(
       allowNull: false,
       defaultValue: '',
     },
+    metadata: {
+      type: Sequelize.DataTypes.JSON,
+      allowNull: false,
+      defaultValue: JSON.stringify({}),
+    },
   },
   {
     paranoid: true,
