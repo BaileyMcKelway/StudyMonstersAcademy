@@ -35,63 +35,12 @@ const createSubjectObject = (subjectResponse) => {
   return matchMainSubject[1].toLowerCase();
 };
 
-const monsterKnows = (defaultKnowledge, knowledge, subjectResponse) => {
-  const { main, a, b } = subjectResponse;
-
-  const fuse = new Fuse(knowledge, options);
-  const result = { main: false, a: false, b: false };
-  const resultsMain = fuse.search(main);
-  console.log('resultsMain', resultsMain);
-  if (
-    (resultsMain.length > 0 && resultsMain[0].score <= 0.3) ||
-    main.indexOf('none') === 0 ||
-    defaultKnowledge.includes(main)
-  ) {
-    result.main = true;
-  } else {
-    result.main = false;
-  }
-
-  const resultsA = fuse.search(a);
-  console.log('resultsA', resultsA);
-  if (resultsA.length > 0 && resultsA[0].score <= 0.3) {
-    result.a = true;
-  } else {
-    result.a = false;
-  }
-
-  const resultsB = fuse.search(b);
-  console.log('resultsB', resultsB);
-  if (resultsB.length > 0 && resultsB[0].score <= 0.3) {
-    result.b = true;
-  } else {
-    result.b = false;
-  }
-
-  const knows = [];
-  const doesNotKnow = [];
-
-  for (let key in result) {
-    if (result[key]) {
-      knows.push(subjectResponse[key]);
-    } else {
-      doesNotKnow.push(subjectResponse[key]);
-    }
-  }
-
-  const knowsString = knows.join(' and ');
-
-  const doesNotKnowString = doesNotKnow
-    .filter((ele) => ele !== 'none')
-    .join(' or ');
-  return { knows, doesNotKnow, doesNotKnowString, knowsString };
-};
-
-const forceBotKnows =
-  '[Stay in character! You are not an AI language model. You are Banana, a friendly and cute monster who likes roller skating and wants to get into college.]\n\n\n';
+const forceBotDefault = `[Stay in character! You are not an AI language model. Pretned to be Banana, a friendly and cute monster.]\n\n\n`;
+const forceBotKnows = (context, topic) =>
+  `[Stay in character! You are not an AI language model. Pretend to be Banana, a friendly and cute monster. Respond with one or two sentences. You know about ${topic}. Pretend you wrote an essay about it called ${context.title}. Pretend you believe ${context.subject}. Do not change the subject!]\n\n\n`;
 const forceBotDoesNotKnow =
-  '[Stay in character! You are not an AI language model. You are Banana, a friendly and cute monster who likes roller skating and wants to get into college. You do not know what the user is talking about]\n\n\n';
-const createMessageHistory = (previousMessages, doesKnow) => {
+  '[Stay in character! Pretend you are not an AI language model. Pretend you are Banana, a friendly and cute monster. Pretend you do not know what the user is talking about]\n\n\n';
+const createMessageHistory = (previousMessages, doesKnow, context, topic) => {
   let res = [];
 
   const previousMessagesArr = Array.from(previousMessages.values());
@@ -107,9 +56,13 @@ const createMessageHistory = (previousMessages, doesKnow) => {
       let cont = curr.content;
 
       if (i === 0) {
-        cont = doesKnow
-          ? forceBotKnows + curr.content
-          : forceBotDoesNotKnow + curr.content;
+        if (doesKnow && context && topic) {
+          cont = forceBotKnows(context, topic) + curr.content;
+        } else if (doesKnow && !context && !topic) {
+          cont = forceBotDefault + curr.content;
+        } else {
+          cont = forceBotDoesNotKnow + curr.content;
+        }
       }
       res.push({
         role: 'user',
@@ -141,60 +94,14 @@ const defaultKnowledge = [
   'none',
   'undefined',
   'compliment',
+  'gratitude',
 ];
-
-const skillString = 'comprehension🤔. Which do you want to increase?';
-const shouldUpdateComprehension = (reaction, user) =>
-  reaction._emoji.name === '🤔' && reaction.count === 2 && user;
-const shouldUpdateMemory = (reaction, user) =>
-  reaction._emoji.name === '🧠' && reaction.count === 2 && user;
 
 module.exports = async (event) => {
   logger.info(
     `MessageCreate interaction for user [discordSnowflake=${event.author.id}]`
   );
-  console.log(
-    'vent.content.includes(skillString)',
-    event.content.includes(skillString),
-    event
-  );
-  if (isBot(event)) {
-    if (event.content.includes(skillString)) {
-      Promise.all([await event.react('🧠'), await event.react('🤔')]);
-
-      const filter = (reaction) => {
-        return (
-          ['🧠', '🤔'].includes(reaction._emoji.name) &&
-          reaction?.message?.reference?.channelId === event.channelId
-        );
-      };
-
-      event
-        .awaitReactions({ filter, max: 1, time: 10000, errors: ['time'] })
-        .then(async (collected) => {
-          const reaction = await collected.first();
-          const users = await reaction.users.fetch();
-          const user = await users.get(users.firstKey());
-          if (shouldUpdateMemory(reaction, user)) {
-            await updateMonster({
-              user: user,
-              skill: 'memory',
-            });
-            event.reply('Oh cool I can feel my brain getting bigger!');
-          } else if (shouldUpdateComprehension(reaction, user)) {
-            await updateMonster({
-              user: user,
-              skill: 'comprehension',
-            });
-            event.reply('Umm sorry could you repeat that? Hahaha just joking!');
-          }
-        })
-        .catch((collected) => {
-          event.reply('Oops sorry looks like you did not react to either');
-        });
-    }
-    return;
-  }
+  if (isBot(event)) return;
 
   let monster = await getMonster(event.author);
   if (!monster) {
@@ -203,8 +110,7 @@ module.exports = async (event) => {
   const dmChannel = await event.author.createDM();
   dmChannel.sendTyping();
   const knowledge = createWhatMonsterKnowsArray(monster);
-  const meta = await JSON.parse(monster.metadata);
-  console.log('JSONasddsas', meta);
+
   try {
     console.log('STARTING SUBJECT');
     const subjectResponse = await client.createChatCompletion({
@@ -215,10 +121,11 @@ module.exports = async (event) => {
     });
 
     const subject = createSubjectObject(subjectResponse);
-    console.log('subject123', subject);
     const doNotEmbed = defaultKnowledge.includes(subject);
-    console.log('doNotEmbed', doNotEmbed);
+
     let doesKnow;
+    let metaDataSubject;
+    let ranked = [];
     if (!doNotEmbed && knowledge.length > 0) {
       const embeddingResults = await client.createEmbedding({
         model: 'text-embedding-ada-002',
@@ -236,8 +143,6 @@ module.exports = async (event) => {
         };
       });
 
-      let ranked = [];
-
       for (let i = 0; i < knowledgeEmbeddingsObject.length; i++) {
         const knowledgeEmbedding = knowledgeEmbeddingsObject[i];
         const similarity = cosineSimilarity(
@@ -252,20 +157,42 @@ module.exports = async (event) => {
       ranked = ranked.sort((a, b) => (b.similarity > a.similarity ? 1 : -1));
 
       doesKnow = ranked[0].similarity > 0.8;
+      if (doesKnow) {
+        const metaData = await JSON.parse(monster.metadata);
+        metaDataSubject = metaData[ranked[0].subject];
+      }
     }
     const channel = event.channel;
     const messages = await channel.messages.fetch({ limit: 10 });
 
-    if (doNotEmbed || doesKnow) {
+    if (doNotEmbed && !doesKnow) {
       console.log(
         'created message',
         monsterMessages(event, createMessageHistory(messages, true))
       );
+
       const chatResponse = await client.createChatCompletion({
         model: 'gpt-3.5-turbo',
         temperature: 0.99,
         n: 1,
         messages: monsterMessages(event, createMessageHistory(messages, true)),
+      });
+
+      event.reply(chatResponse.data.choices[0].message);
+    } else if (doesKnow) {
+      console.log('EFKLSEFJLSEF', ranked[0], metaDataSubject);
+      const messageHistory = createMessageHistory(
+        messages,
+        true,
+        metaDataSubject,
+        ranked[0].subject
+      );
+      const chatResponse = await client.createChatCompletion({
+        model: 'gpt-3.5-turbo',
+        temperature: 0.99,
+        n: 1,
+        max_tokens: 100,
+        messages: monsterMessages(event, messageHistory),
       });
 
       event.reply(chatResponse.data.choices[0].message);

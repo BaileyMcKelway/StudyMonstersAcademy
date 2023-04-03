@@ -1,6 +1,14 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { getMonster, getNotes, getEssays } = require('../../database/utils');
 
+const createWhatMonsterKnowsString = (knowledge) => {
+  return knowledge
+    .split(',')
+    .filter((item) => item !== '')
+    .map((subject) => subject.replace(/\b\w/g, (char) => char.toUpperCase()))
+    .join(', ');
+};
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('lookup')
@@ -14,14 +22,16 @@ module.exports = {
           ['Stats', 'stats'],
           ['Essays', 'essays'],
           ['Notes', 'notes'],
+          ['Knowledge', 'knowledge'],
         ])
     ),
   async execute(interaction) {
     const commandType = interaction.options.getString('lookup');
 
     if (commandType === 'stats') {
+      await interaction.deferReply({ ephemeral: true });
       const monster = await getMonster(interaction.user);
-      await interaction.reply({
+      await interaction.editReply({
         content: '',
         embeds: [
           {
@@ -37,43 +47,75 @@ module.exports = {
                 name: `Experience 📈`,
                 value: `${monster.experience} / ${monster.level * 200 + 100}`,
               },
-              {
-                name: `Skill Points`,
-                value: `Memory 🧠 :${monster.memory}\nComprehension 🤔:${monster.comprehension}\n`,
-              },
             ],
           },
         ],
       });
     } else if (commandType === 'essays') {
+      await interaction.deferReply({ ephemeral: true });
       const essays = await getEssays(interaction.user);
-
-      let fields = [];
-      essays.forEach((essay) => {
-        fields.push({
-          name: 'Essay',
-          value: essay?.dataValues?.text,
+      if (essays.length === 0) {
+        await interaction.editReply({
+          content: '',
+          embeds: [
+            {
+              title: 'Essays',
+              color: 14588438,
+              fields: [{ name: 'No essays', value: '' }],
+            },
+          ],
         });
-      });
-      if (fields.length === 0) {
-        fields = [{ name: 'No essays', value: '' }];
       }
-      await interaction.reply({
-        content: '',
-        embeds: [
-          {
-            title: 'Essays',
-            color: 14588438,
-            fields: fields,
-          },
-        ],
-      });
+      let res = '';
+      for (let i = 0; i < essays.length; i++) {
+        res += `- ${essays[i].title}\n`;
+
+        if (i % 20 === 0) {
+          if (i === 20) {
+            await interaction.editReply({
+              content: '',
+              embeds: [
+                {
+                  title: 'Essays',
+                  color: 14588438,
+                  fields: [{ name: 'Essay Titles', value: res }],
+                },
+              ],
+            });
+            res = '';
+          } else if (i > 20) {
+            await interaction.followUp({
+              content: '',
+              embeds: [
+                {
+                  title: 'Essays',
+                  color: 14588438,
+                  fields: [{ name: 'Essay Titles', value: res }],
+                },
+              ],
+            });
+            res = '';
+          }
+        }
+      }
+      if (essays.length < 20) {
+        await interaction.editReply({
+          content: '',
+          embeds: [
+            {
+              title: 'Essays',
+              color: 14588438,
+              fields: [{ name: 'Essay Titles', value: res }],
+            },
+          ],
+        });
+      }
     } else if (commandType === 'notes') {
-      const monster = await getMonster(interaction.user);
+      await interaction.deferReply({ ephemeral: true });
       const notes = await getNotes(interaction.user);
       const fields = [
         {
-          name: `Space ${notes.length || 0}/${monster.memory + 3}`,
+          name: `Space ${notes.length || 0}/${3}`,
           value: '',
         },
       ];
@@ -89,13 +131,32 @@ module.exports = {
           value,
         });
       });
-      await interaction.reply({
+      await interaction.editReply({
         content: '',
         embeds: [
           {
             title: 'Notes',
             color: 14588438,
             fields: fields,
+          },
+        ],
+      });
+    } else if (commandType === 'knowledge') {
+      await interaction.deferReply({ ephemeral: true });
+      const { knowledge } = await getMonster(interaction.user);
+      const knowledgeString = createWhatMonsterKnowsString(knowledge);
+      await interaction.editReply({
+        content: '',
+        embeds: [
+          {
+            title: 'Knowledge',
+            color: 14588438,
+            fields: [
+              {
+                name: 'Here are the things I know about...',
+                value: knowledgeString,
+              },
+            ],
           },
         ],
       });

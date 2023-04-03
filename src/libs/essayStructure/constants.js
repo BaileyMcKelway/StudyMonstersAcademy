@@ -1,140 +1,124 @@
-// const historyAndPolitics = (essayNumber, topicA, topicB, topicC) => {
-//   const historyAndPoliticsEssays = [
-//     {
-//       title: `The impact of ${topicA.subject} on ${topicB.subject} and ${topicC.subject}.`,
-//       text: `The ${topicA.subject} had a profound impact on ${topicB.subject} and ${topicC.subject} throughout its duration. The conflict between ${topicB.subject} and ${topicC.subject}, defined ${topicA.ideaA}. It began because of ${topicB.ideaA}. The ${topicA.subject} had a lasting impact on ${topicB.subject} and ${topicC.subject}. It shaped the way in which ${topicB.subject} and ${topicC.subject} interacted with each other for decades to come. ${topicC.ideaA} became a dominant strategy in ${topicB.subject} and ${topicC.subject} during the ${topicA.subject}. Even today, the impact of the ${topicA.subject} can be seen in the ongoing tensions between ${topicB.subject} and ${topicC.subject}, as well as the continuing efforts to prevent the spread of ${topicB.ideaB} around the world.`,
-//     },
-//   ];
-
-//   return historyAndPoliticsEssays[essayNumber];
-// };
-
 const historyAndPolitics = (topicA, topicB, topicC) => {
-  return `The impact of ${topicA.subject} on ${topicB.subject} and ${topicC.subject}.`;
+  const historyAndPoliticsEssays = [
+    `The impact of ${topicA.subject} on ${topicB.subject} and ${topicC.subject}.`,
+    `The Rise and Fall of ${topicA.subject} and its Impact on ${topicB.subject} and ${topicC.subject}`,
+    `The ${topicA.subject} and its Significance in ${topicB.subject} and ${topicC.subject}`,
+    `The Legacy of ${topicA.subject} in ${topicB.subject} and ${topicC.subject}`,
+    `The Relevance of ${topicA.subject} in ${topicB.subject} and ${topicC.subject}`,
+    `The Emergence and Development of ${topicA.subject} regarding ${topicB.subject} and ${topicC.subject}`,
+    `Was ${topicA.subject} beneficial or detrimental to ${topicB.subject} and ${topicC.subject}?`,
+    `Was the ${topicA.subject} more beneficial than harmful to ${topicB.subject} or ${topicC.subject}?`,
+  ];
+  return historyAndPoliticsEssays[
+    Math.floor(Math.random() * historyAndPoliticsEssays.length)
+  ];
 };
-
-// const scienceAndTechnology = (essayNumber, topicA, topicB, topicC) => {
-//   const scienceAndTechnologyEssays = [
-//     {
-//       title: `The Future of ${topicA.subject}: Emerging ${topicB.subject} and Implications for ${topicC.subject}`,
-//       text: `The future of ${topicA.subject} is looking increasingly promising, with emerging ${topicB.subject} set to revolutionize the ${topicC.subject} industry. One of the most exciting developments is ${topicA.ideaA}. With more and more ${topicB.subject}, ${topicC.subject} is going to have a hard time ${topicC.ideaA}And this is all because ${topicA.ideaB}. Without it ${topicC.ideaB}. Only time will tell what is to hold for ${topicA.subject}, ${topicB.subject}, and ${topicC.subject}`,
-//     },
-//   ];
-
-//   return scienceAndTechnologyEssays[essayNumber];
-// };
 
 const scienceAndTechnology = (topicA, topicB, topicC) => {
-  return `The Future of ${topicA.subject}: Emerging ${topicB.subject} and Implications for ${topicC.subject}`;
+  const scienceAndTechnologyEssays = [
+    `The Future of ${topicA.subject}: Emerging ${topicB.subject} and Implications for ${topicC.subject}`,
+    `The Ethical Implications of Artificial Intelligence`,
+    'The Developments in Biotechnology and their Implications for the Future',
+    `The Possibilities of Space Colonization`,
+    `The Contributions of Women in Science and Technology`,
+    `Is the use of ${topicA.subject} safe and beneficial, or should we move towards alternative ${topicB.subject} and ${topicC.subject}?`,
+    `Is the development of ${topicA.subject} a threat to ${topicB.subject} and the ${topicC.subject}?`,
+    `Is the ${topicA.subject} a positive or negative influence on ${topicB.subject} and ${topicC.subject}?`,
+  ];
+  return scienceAndTechnologyEssays[
+    Math.floor(Math.random() * scienceAndTechnologyEssays.length)
+  ];
 };
-
-// const artsAndHumanities = (essayNumber, topicA, topicB, topicC) => {
-//   const artsAndHumanitiesEssays = [
-//     {
-//       title: `Portrayals of ${topicB.subject} in ${topicA.subject}: A Critique of ${topicC.subject}`,
-//       text: `The portrayal of ${topicB.subject} in ${topicA.subject} has been a topic of discussion for many years, with ${topicC.subject} being a central focus. In many works of ${topicA.subject}, ${topicB.subject} have been depicted as ${topicB.ideaA}. This has led to criticism of ${topicC.subject} that are perpetuated in ${topicA.subject}. Many peopl argue that ${topicB.ideaA}. However, there have also been works of ${topicA.subject} that have challenged ${topicC.subject} and provided alternative depictions of ${topicB.subject}. Some artists have portrayed ${topicC.ideaA}. These depictions have been seen as empowering ${topicB.subject}. Overall, the portrayal of ${topicB.subject} in ${topicA.subject} is an important reflection of societal norms and has the potential to shape attitudes towards ${topicC.subject}.`,
-//     },
-//   ];
-//   return artsAndHumanitiesEssays[essayNumber];
-// };
 
 const artsAndHumanities = (topicA, topicB, topicC) => {
-  return `Portrayals of ${topicB.subject} in ${topicA.subject}: A Critique of ${topicC.subject}`;
+  const artsAndHumanitiesEssays = [
+    `Portrayals of ${topicB.subject} in ${topicC.subject}: A Critique of ${topicA.subject}`,
+    `In Search of ${topicA.subject}: The Emergence of ${topicB.subject} and ${topicC.subject}`,
+    `${topicA.subject} as a Reflection of ${topicB.subject} and ${topicC.subject}`,
+    `Investigating the Psychology of ${topicA.subject} in ${topicB.subject} and ${topicC.subject}`,
+    `Exploring the Relationship between ${topicB.subject} and ${topicC.subject} in ${topicA.subject}`,
+    `The Intersection of ${topicA.subject}, ${topicB.subject} and ${topicC.subject}`,
+  ];
+  return artsAndHumanitiesEssays[
+    Math.floor(Math.random() * artsAndHumanitiesEssays.length)
+  ];
 };
 
-// const socialSciences = (essayNumber, topicA, topicB, topicC) => {
-//   const socialSciencesEssays = [
-//     {
-//       title: `The History and Significance of ${topicA.subject} and ${topicB.subject} in Different ${topicC.subject}`,
-//       text: `${topicA.subject} and ${topicB.subject} have been integral parts of human society for thousands of years, and their meanings and significance have varied greatly across different ${topicC.subject}. In many ${topicC.subject}, ${topicA.subject} has been viewed as a sacred bond between two individuals, because ${topicA.ideaA}. In some ${topicC.subject}, ${topicA.subject} are arranged by ${topicB.subject} to strengthen social ties, ensure ${topicB.ideaA}. As societies have evolved, so have attitudes towards ${topicC.ideaA}. The history and significance of ${topicA.subject} and ${topicB.subject} in different ${topicC.subject} provide valuable insight into the ways in which ${topicA.ideaB}. By studying how ${topicA.subject} and ${topicB.subject} have been conceptualized across different ${topicC.subject}, we can gain a deeper appreciation for the diversity of human experiences and a greater understanding of the social and cultural forces that shape our lives.`,
-//     },
-//   ];
-//   return socialSciencesEssays[essayNumber];
-// };
-
-const socialSciences = (topicA, topicB, topicC) => {
-  return `The History and Significance of ${topicA.subject} and ${topicB.subject} in Different ${topicC.subject}`;
+const celebrities = (topicA, topicB, topicC) => {
+  const celebritiesEssays = [
+    `The History and Significance of ${topicA.subject} and ${topicB.subject} in Different ${topicC.subject}`,
+    `From ${topicB.subject} to ${topicC.subject}: The Evolution of ${topicA.subject}`,
+    `Why ${topicA.subject} love for ${topicB.subject} is more important than ${topicC.subject}`,
+    `The Hidden Connection Between ${topicA.subject}, ${topicB.subject}, and ${topicC.subject}`,
+    `The Connection Between ${topicA.subject}, ${topicB.subject} and ${topicC.subject}`,
+    `The Influence of ${topicA.subject} on ${topicB.subject} and ${topicC.subject}`,
+  ];
+  return celebritiesEssays[
+    Math.floor(Math.random() * celebritiesEssays.length)
+  ];
 };
-
-// const businessAndEconomics = (essayNumber, topicA, topicB, topicC) => {
-//   const businessAndEconomicsEssays = [
-//     {
-//       title: `The future of ${topicA.subject}: ${topicB.subject} vs. ${topicC.subject}`,
-//       text: `The future of ${topicA.subject} is being shaped by a number of factors, including advances in technology, changing demographics, and shifting cultural attitudes. One of the most significant changes is the rise of ${topicB.subject}, which ${topicB.ideaA}. While ${topicB.subject} has many advantages, such as  ${topicB.ideaB}, it also poses some challenges. On the other hand, ${topicC.subject} still has its own advantages, such as ${topicC.ideaA}. Additionally, certain types of ${topicA.subject} may require ${topicA.ideaB}. While ${topicB.subject} has become increasingly popular in recent years, it is likely that many organizations will continue to embrace ${topicC.subject}. Ultimately, the future of ${topicA.subject} will depend on the needs and preferences of individual organizations and their employees.`,
-//     },
-//   ];
-//   return businessAndEconomicsEssays[essayNumber];
-// };
 
 const businessAndEconomics = (topicA, topicB, topicC) => {
-  return `The future of ${topicA.subject}: ${topicB.subject} vs. ${topicC.subject}`;
+  const businessAndEconomicsEssays = [
+    `The future of ${topicA.subject}: ${topicB.subject} vs. ${topicC.subject}`,
+    `The Impact of ${topicA.subject} on ${topicB.subject} and ${topicC.subject}`,
+    `The Importance of ${topicA.subject} in ${topicB.subject} and ${topicC.subject}`,
+    `The Econmics of ${topicA.subject}: ${topicB.subject} vs. ${topicC.subject}`,
+    `The Role of ${topicA.subject} in ${topicB.subject} and ${topicC.subject}`,
+  ];
+  return businessAndEconomicsEssays[
+    Math.floor(Math.random() * businessAndEconomicsEssays.length)
+  ];
 };
-
-// const educationAndPedagogy = (essayNumber, topicA, topicB, topicC) => {
-//   const educationAndPedagogyEssays = [
-//     {
-//       title: `The Importance of ${topicC.subject} in ${topicA.subject} and ${topicB.subject}`,
-//       text: `${topicC.subject} is the ability to ${topicC.ideaA} . In the context of ${topicA.subject} and ${topicB.subject}, having ${topicC.subject} is crucial for ${topicC.ideaA}. This is because ${topicA.ideaA}. Therefore, ${topicA.subject}  and promoting ${topicC.subject}  in the classroom can have a positive impact on ${topicB.subject} . Incorporating activities that foster ${topicC.ideaC} builds connections. This is why ${topicC.subject} is important for ${topicA.subject} and ${topicB.subject}`,
-//     },
-//   ];
-//   return educationAndPedagogyEssays[essayNumber];
-// };
 
 const educationAndPedagogy = (topicA, topicB, topicC) => {
-  return `The Importance of ${topicC.subject} in ${topicA.subject} and ${topicB.subject}`;
+  const educationAndPedagogyEssays = [
+    `The Importance of ${topicC.subject} in ${topicA.subject} and ${topicB.subject}`,
+    `The Need for ${topicC.subject} in ${topicA.subject} and ${topicB.subject}`,
+    `Should ${topicA.subject} be Mandatory? An Argument for ${topicB.subject} and ${topicC.subject}`,
+    `Why ${topicA.subject} is the Key to ${topicB.subject} and ${topicC.subject}`,
+  ];
+  return educationAndPedagogyEssays[
+    Math.floor(Math.random() * educationAndPedagogyEssays.length)
+  ];
 };
-
-// const healthAndMedicine = (essayNumber, topicA, topicB, topicC) => {
-//   const healthAndMedicineEssays = [
-//     {
-//       title: `The Ethics of ${topicA.subject}, ${topicB.subject}, and ${topicC.subject}`,
-//       text: `${topicC.subject} is the ability to ${topicC.ideaA} . In the context of ${topicA.subject} and ${topicB.subject}, having ${topicC.subject} is crucial for ${topicC.ideaA}. This is because ${topicA.ideaA}. Therefore, ${topicA.subject}  and promoting ${topicC.subject}  in the classroom can have a positive impact on ${topicB.subject} . Incorporating activities that foster ${topicC.ideaC} builds connections. This is why ${topicC.subject} is important for ${topicA.subject} and ${topicB.subject}`,
-//     },
-//   ];
-//   return healthAndMedicineEssays[essayNumber];
-// };
 
 const healthAndMedicine = (topicA, topicB, topicC) => {
-  return `The Ethics of ${topicA.subject}, ${topicB.subject}, and ${topicC.subject}`;
+  const healthAndMedicineEssays = [
+    `The Ethics of ${topicA.subject}: Should We Screen for ${topicB.subject} and ${topicC.subject}?`,
+    `The Pros and Cons of ${topicA.subject}: Is it the Solution for ${topicB.subject} and  ${topicC.subject}?`,
+    `The Stigma of ${topicA.subject}: Why We Need to Talk More About ${topicB.subject} and ${topicC.subject}`,
+    `The Debate on ${topicA.subject}: An Argument for ${topicB.subject} and ${topicC.subject}`,
+  ];
+  return healthAndMedicineEssays[
+    Math.floor(Math.random() * healthAndMedicineEssays.length)
+  ];
 };
-
-// const environmentAndSustainability = (essayNumber, topicA, topicB, topicC) => {
-//   const environmentAndSustainabilityEssays = [
-//     {
-//       title: `${topicA.subject} and Its Effects on ${topicB.subject} and ${topicC.subject}`,
-//       text: `TEST environmentAndSustainability`,
-//     },
-//   ];
-//   return environmentAndSustainabilityEssays[essayNumber];
-// };
 
 const environmentAndSustainability = (topicA, topicB, topicC) => {
-  return `${topicA.subject} and Its Effects on ${topicB.subject} and ${topicC.subject}`;
+  const environmentAndSustainabilityEssays = [
+    `${topicA.subject} and Its Effects on ${topicB.subject} and ${topicC.subject}`,
+    `The Ethics of ${topicA.subject} in ${topicB.subject} and ${topicC.subject}`,
+    `The Need for ${topicA.subject} to Combat ${topicB.subject} and ${topicC.subject}`,
+    `${topicA.subject} and Its Impact on ${topicB.subject} and ${topicC.subject}`,
+  ];
+  return environmentAndSustainabilityEssays[
+    Math.floor(Math.random() * environmentAndSustainabilityEssays.length)
+  ];
 };
-
-// const sportsAndRecreation = (essayNumber, topicA, topicB, topicC) => {
-//   const sportsAndRecreationEssays = [
-//     {
-//       title: `The Psychology of ${topicA.subject}: How ${topicB.subject} Stay Motivated and Focused`,
-//       text: `TEST sportsAndRecreation`,
-//     },
-//   ];
-//   return sportsAndRecreationEssays[essayNumber];
-// };
 
 const sportsAndRecreation = (topicA, topicB, topicC) => {
-  return `The Psychology of ${topicA.subject}: How ${topicB.subject} Stay Motivated and Focused`;
+  const sportsAndRecreationEssays = [
+    `The Psychology of ${topicA.subject}: How ${topicB.subject} Stay Motivated and Focused with ${topicC.subject}`,
+    `${topicA.subject} and ${topicB.subject}: How ${topicA.subject} Can Bridge ${topicC.subject}`,
+    `The Culture of ${topicA.subject}: How ${topicB.subject} Reflect ${topicC.subject} Values and Beliefs`,
+    `The History of the ${topicA.subject}: A Look Back at ${topicA.subject} effect on ${topicB.subject} and ${topicC.subject}`,
+    `The Economics of ${topicA.subject}: The Costs and Benefits of ${topicB.subject} and ${topicC.subject}`,
+  ];
+  return sportsAndRecreationEssays[
+    Math.floor(Math.random() * sportsAndRecreationEssays.length)
+  ];
 };
-
-// const religionAndSpirituality = (essayNumber, topicA, topicB, topicC) => {
-//   const religionAndSpiritualityEssays = [
-//     {
-//       title: `The Controversy Surrounding ${topicA.subject} and ${topicB.subject}`,
-//       text: `TEST religionAndSpirituality`,
-//     },
-//   ];
-//   return religionAndSpiritualityEssays[essayNumber];
-// };
 
 const religionAndSpirituality = (topicA, topicB, topicC) => {
   return `The Controversy Surrounding ${topicA.subject} and ${topicB.subject}`;
@@ -144,7 +128,7 @@ module.exports = {
   'History And Politics': historyAndPolitics,
   'Science and Technology': scienceAndTechnology,
   'Arts And Humanities': artsAndHumanities,
-  'Social Sciences': socialSciences,
+  Celebrities: celebrities,
   'Business And Economics': businessAndEconomics,
   'Education And Pedagogy': educationAndPedagogy,
   'Health And Medicine': healthAndMedicine,

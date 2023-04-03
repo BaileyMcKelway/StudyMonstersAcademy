@@ -14,6 +14,14 @@ Essays.init(
       primaryKey: true,
       allowNull: false,
     },
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    category: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     text: {
       type: DataTypes.TEXT,
       allowNull: false,

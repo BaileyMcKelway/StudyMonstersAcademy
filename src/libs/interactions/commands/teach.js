@@ -9,7 +9,7 @@ const {
   trueOrFalseMessages,
   subjectAndIdeasMessages,
 } = require('../../chat/constants');
-const { createNote, getMonster, getNotes } = require('../../database/utils');
+const { createNote, getNotes } = require('../../database/utils');
 
 const isSlashCmd = (interaction) => interaction.type === 2;
 const isNotBot = (m) => m?.author?.bot !== true;
@@ -93,55 +93,11 @@ module.exports = {
         await interaction.deferReply({ ephemeral: true });
       }
       const notes = await getNotes(interaction.user);
-      const { memory, comprehension } = await getMonster(interaction.user);
 
-      if (memory + 3 <= notes.length) {
+      if (3 <= notes.length) {
         return interaction.editReply(
           'You have the maximum number of notes already created! Time to write an essay!'
         );
-      }
-      if (comprehension === 5) {
-        const text = interaction.options.getString('teach_input');
-        const subjectAndMainIdeas = await client.createChatCompletion({
-          model: 'gpt-3.5-turbo',
-          temperature: 0.1,
-          n: 1,
-          messages: subjectAndIdeasMessages(text),
-        });
-
-        const { subject, category, ideaA, ideaB } =
-          parseSubjectCategoryAndIdeas(
-            subjectAndMainIdeas?.data?.choices[0]?.message?.content
-          );
-
-        await createNote({
-          user: interaction.user,
-          text: text,
-          ideas: ideaA + '$$' + ideaB,
-          quality: 100,
-          subject,
-          category,
-        });
-        await interaction.editReply(
-          'Your monster has reached the maximum comprehension level! That means no questions!'
-        );
-
-        await interaction.followUp({
-          content: '',
-          embeds: [
-            {
-              title: 'New Note!',
-              color: 14588438,
-              fields: [
-                {
-                  name: `Quality ${100}%`,
-                  value: '',
-                },
-              ],
-            },
-          ],
-        });
-        return;
       }
 
       const userId = interaction.user.id;
@@ -170,7 +126,7 @@ module.exports = {
 
       const collector = new InteractionCollector(interaction.client, {
         filter,
-        max: 5 - comprehension,
+        max: 5,
         time: 1000 * 60,
       });
 
@@ -213,7 +169,7 @@ module.exports = {
       collector.on('end', async (collected, reason) => {
         const lastReply = await collected.get(collected.lastKey());
         const collectedSize = collected.size;
-        if (lastReply && collectedSize === 5 - comprehension) {
+        if (lastReply && collectedSize === 5) {
           await lastReply.deferReply({ ephemeral: true });
 
           const userQuestions = questionsCache.get(userId);

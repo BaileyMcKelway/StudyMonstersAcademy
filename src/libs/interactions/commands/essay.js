@@ -1,15 +1,5 @@
-const {
-  ActionRowBuilder,
-  ButtonBuilder,
-  InteractionCollector,
-} = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const {
-  client,
-  trueOrFalseMessages,
-  subjectAndIdeasMessages,
-  essayCreation,
-} = require('../../chat/constants');
+const { client, essayCreation } = require('../../chat/constants');
 const essaySkeletons = require('../../essayStructure/constants');
 const {
   getNotes,
@@ -18,9 +8,6 @@ const {
   updateMonster,
   deleteNotes,
 } = require('../../database/utils');
-
-const isSlashCmd = (interaction) => interaction.type === 2;
-const isNotBot = (m) => m?.author?.bot !== true;
 
 const calculateExperienceGained = (notes) => {
   const avgQuality =
@@ -38,9 +25,18 @@ const createMonsterMetaData = async (
   essaySubject
 ) => {
   const parsedMetaData = await JSON.parse(metadata);
-  parsedMetaData[noteTitles[0]] = { title: essayTitle, subject: essaySubject };
-  parsedMetaData[noteTitles[1]] = { title: essayTitle, subject: essaySubject };
-  parsedMetaData[noteTitles[2]] = { title: essayTitle, subject: essaySubject };
+  parsedMetaData[noteTitles[0].toLowerCase()] = {
+    title: essayTitle,
+    subject: essaySubject,
+  };
+  parsedMetaData[noteTitles[1].toLowerCase()] = {
+    title: essayTitle,
+    subject: essaySubject,
+  };
+  parsedMetaData[noteTitles[2].toLowerCase()] = {
+    title: essayTitle,
+    subject: essaySubject,
+  };
   console.log('parsedMetaData123', parsedMetaData);
   return parsedMetaData;
 };
@@ -49,15 +45,17 @@ const handleMonsterExperience = async ({
   interaction,
   gainedExperience,
   noteTitles,
+  essayObject,
 }) => {
-  const { level, experience, knowledge, memory, comprehension, metadata } =
-    await getMonster(interaction.user);
+  const { level, experience, knowledge, metadata } = await getMonster(
+    interaction.user
+  );
 
   const newMetaData = await createMonsterMetaData(
     metadata,
     noteTitles,
-    'TEST TITLE',
-    'TEST SUBJECT'
+    essayObject.title,
+    essayObject.mainIdea
   );
 
   const knowledgeArray = knowledge.split(',');
@@ -82,8 +80,6 @@ const handleMonsterExperience = async ({
   return {
     hasLeveledUp,
     totalLevelExperience,
-    memory,
-    comprehension,
     level,
     experience,
     newMetaData,
@@ -139,10 +135,31 @@ const handleTopics = (notes) => {
 };
 
 const createEssayPrompt = (essayTitle, topics) => {
-  return `Write a funny short essay titled "${essayTitle}" Only using the main ideas below,\n\nIdea: ${topics[0].ideaA}\nIdea:  ${topics[0].ideaB}\nIdea: ${topics[1].ideaA}\nIdea:  ${topics[1].ideaB}\nIdea: ${topics[2].ideaA}\nIdea:  ${topics[2].ideaB}\n\n Return the title, essay, and main idea \n\nTitle:`;
+  return `Write a funny short essay titled "${essayTitle}" Using the main ideas below,\n\nIdea: ${topics[0].ideaA}\nIdea:  ${topics[0].ideaB}\nIdea: ${topics[1].ideaA}\nIdea:  ${topics[1].ideaB}\nIdea: ${topics[2].ideaA}\nIdea:  ${topics[2].ideaB}\n\n Return the title, essay, and main idea \n\n`;
 };
 
-const essayCache = new Map();
+const parseEssay = (inputString) => {
+  const lines = inputString.split('\n');
+  const result = {
+    title: '',
+    essay: '',
+    mainIdea: '',
+  };
+  lines.forEach((line) => {
+    const matchTitle = line.match(/^Title: (.+)/);
+    const matchEssay = line.match(/^Essay: (.+)/);
+    const matchMainIdea = line.match(/^Main Idea: (.+)/);
+
+    if (matchTitle) {
+      result.title = matchTitle[1];
+    } else if (matchEssay) {
+      result.essay = matchEssay[1];
+    } else if (matchMainIdea) {
+      result.mainIdea = matchMainIdea[1];
+    }
+  });
+  return result;
+};
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -157,7 +174,6 @@ module.exports = {
   async execute(interaction) {
     try {
       await interaction.deferReply({ ephemeral: true });
-      const userId = interaction.user.id;
 
       const noteTitles = cleanNoteTitles(interaction);
 
@@ -182,7 +198,6 @@ module.exports = {
         return;
       }
       notes = createNotesArray(notes, noteTitles[0]);
-      console.log('notes123', notes);
       if (notes.length > 3) {
         notes = getUniqueSubjects(notes);
       }
@@ -203,27 +218,31 @@ module.exports = {
         frequency_penalty: 0,
         presence_penalty: 0,
       });
-      interaction.editReply(response?.data?.choices[0].text);
+
+      console.log('response123', response?.data?.choices[0].text);
+      const essayObject = parseEssay(response?.data?.choices[0].text);
+
+      await interaction.editReply(
+        essayObject.title + '\n\n' + essayObject.essay
+      );
+
       const noteIds = notes.map((note) => note.id);
       const gainedExperience = calculateExperienceGained(notes);
 
-      const {
-        hasLeveledUp,
-        totalLevelExperience,
-        memory,
-        comprehension,
-        level,
-        experience,
-      } = await handleMonsterExperience({
-        interaction,
-        gainedExperience,
-        noteTitles,
-      });
+      const { hasLeveledUp, totalLevelExperience, level, experience } =
+        await handleMonsterExperience({
+          interaction,
+          gainedExperience,
+          noteTitles,
+          essayObject,
+        });
 
-      await createEssay(
-        interaction.user,
-        essayTitle + '\n\n' + response?.data?.choices[0].text
-      );
+      await createEssay({
+        user: interaction.user,
+        text: essayObject.essay,
+        title: essayObject.title,
+        category: topics[0].category,
+      });
       await deleteNotes(interaction.user, noteIds);
 
       if (hasLeveledUp) {
