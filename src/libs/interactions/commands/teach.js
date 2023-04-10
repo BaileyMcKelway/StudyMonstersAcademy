@@ -4,6 +4,7 @@ const {
   InteractionCollector,
 } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
+const { teachingEndings } = require('../teachConstants');
 const {
   client,
   trueOrFalseMessages,
@@ -96,7 +97,7 @@ module.exports = {
 
       if (3 <= notes.length) {
         return interaction.editReply(
-          'You have the maximum number of notes already created! Time to write an essay!'
+          'I have all the notes I can handle! Time to write an essay! Just type `/essay` to get started!'
         );
       }
 
@@ -169,6 +170,7 @@ module.exports = {
       collector.on('end', async (collected, reason) => {
         const lastReply = await collected.get(collected.lastKey());
         const collectedSize = collected.size;
+        const userCache = questionsCache.get(userId);
         if (lastReply && collectedSize === 5) {
           await lastReply.deferReply({ ephemeral: true });
 
@@ -206,6 +208,10 @@ module.exports = {
                 color: 14588438,
                 fields: [
                   {
+                    name: `Subject: ${subject}`,
+                    value: '',
+                  },
+                  {
                     name: `Quality ${quality}%`,
                     value: '',
                   },
@@ -213,11 +219,22 @@ module.exports = {
               },
             ],
           });
+
+          await lastReply.followUp(teachingEndings(subject));
+          collector.stop();
+        } else if (reason === 'time' && collectedSize === 0 && userCache) {
+          await interaction.followUp(
+            'Oh no! It looks like you took too long. That is okay, though!'
+          );
+          collector.stop();
+        } else if (reason === 'time' && collectedSize < 5 && userCache) {
+          await lastReply.followUp(
+            'Oh no! It looks like you took too long. That is okay, though!'
+          );
           collector.stop();
         }
         questionsCache.delete(userId);
       });
-      console.log('questionsCache', questionsCache.get(userId));
     } catch (e) {
       console.log(e);
     }

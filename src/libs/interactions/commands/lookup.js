@@ -9,6 +9,10 @@ const createWhatMonsterKnowsString = (knowledge) => {
     .join(', ');
 };
 
+const createWhatMonsterKnowsArray = (knowledge) => {
+  return knowledge.split(',').filter((item) => item !== '');
+};
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('lookup')
@@ -153,8 +157,12 @@ module.exports = {
             color: 14588438,
             fields: [
               {
-                name: 'Here are the things I know about...',
-                value: knowledgeString,
+                name: `${createWhatMonsterKnowsArray(knowledge).length}/415`,
+                value: '',
+              },
+              {
+                name: 'Here are the things I know about:',
+                value: knowledgeString === '' ? '...' : knowledgeString,
               },
             ],
           },

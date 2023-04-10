@@ -45,7 +45,7 @@ const subjectAndIdeasMessages = (text) => [
   {
     role: 'system',
     content:
-      'You are not an AI language model. You get the subject of a text, the category of a text, and two short and concise ideas. The category has to be one of the following Science And Technology, Arts And Humanities, Celebrities, History And Politics, Business And Economics, Education And Pedagogy, Health And Medicine, Environment And Sustainability, Sports And Recreation, or Religion And Spirituality.',
+      'You are not an AI language model. You get the subject of a text, the category of a text, and two short and concise ideas. The category has to be one of the following Science And Technology, Arts And Humanities, Celebrity, History And Politics, Business And Economics, Education And Pedagogy, Health And Medicine, Environment And Sustainability, Sports And Recreation, or Religion And Spirituality.',
   },
   {
     role: 'user',
@@ -102,7 +102,7 @@ const trueOrFalseMessages = (e) => [
 const monsterMessages = (e, messages) => [
   {
     role: 'system',
-    content: `I want you to respond in a casual manner and pretend to be Banana, a friendly and cute monster. Pretend you are chatting with a friend and instructor. Pretend you enjoy roller skating the most. Pretend your primary objective in life is to enroll in college. Pretend you are an eight-year-old male monster.`,
+    content: `I want you to respond in a casual manner and pretend to be Banana, a friendly and cute monster. Pretend you are chatting with a friend and instructor. Pretend you enjoy roller skating the most. Pretend your primary objective in life is to enroll in college. Pretend you are an male monster who is 450 monster years old which is not unlike being 8 years old as a human. Pretend you live in Monster Town which is a normal town but all the names of buildings and streets have the word monster in them.`,
   },
   ...messages,
 ];
@@ -110,14 +110,29 @@ const monsterMessages = (e, messages) => [
 const monsterDoesNotKnowMessages = (e, messages) => [
   {
     role: 'system',
-    content: `I want you to respond in a casual manner and pretend to be Banana, a friendly and cute monster. Pretend you are chatting with a friend and instructor, and you are interested in what they know. Pretend you have no knowledge of what the user is talking about but you would love for them to teach you!. Pretend you are an eight-year-old male monster.`,
+    content: `I want you to respond in a casual manner and pretend to be Banana, a friendly and cute monster. Pretend you are chatting with a friend and instructor, and you are interested in what they know. Pretend you have no knowledge of what the user is talking about but you would love for them to teach you!. Pretend you are an male monster who is 450 monster years old which is not unlike being 8 years old as a human. Pretend you live in Monster Town which is a normal town but all the names of buildings and streets have the word monster in them.`,
   },
   ...messages,
 ];
 
-const essayCreation = (essayPrompt) =>
-  `Write a short essay titled \"The impact of computers on bill gates and elon musk.\" Using the main ideas below,\n\nIdea: Bill Gates is not good at using computers.\nIdea: Bill Gates has a lot of money.\nIdea: Computers can perform complex tasks.\nIdea: Many people have a positive view of computers.\nIdea: Elon Musk has a big butt.\nIdea: He is famous and proud of it.\n\nTitle: The Impact of Computers on Bill Gates and Elon Musk. \nEssay: The impact of computers on Bill Gates and Elon Musk is astounding! Because Bill Gates is not good at using computer people had a positive view of computers. Almost as postive of how people view Elon Musk's big butt. That is why he is famous and proud of it. With out Bill Gates lots of money no one would be able to perform complex tasks.\nMain Idea: Computers had an impact on Bill Gates and Elon Musk because Bill Gates is not good at using computers and Elon Musk has a big butt.\n\nWrite a funny short essay titled \"The Importance of men with no lives in 8am class and internally screaming\" Using the main ideas below,\n\nIdea: They have multiple girlfriends and so many friends.\nIdea: Men with no lives are awesome.\nIdea: 8am class is the worst thing in the world.\nIdea: Poor helpless students are forced to wake up at 7am and listen to BULLSHIT!\nIdea: Internally screaming is the act of expressing strong emotions inside while not showing it physically.\nIdea: Internally screaming has been a form of therapy in many places like corporations, colleges, and single people on dates.\n\nTitle: The Importance of Men with No lives in 8am Class and Internally Screaming\nEssay: The importance of men with no lives in 8am class and internally screaming can not be understated. They are awesome and have multiple girlfriends and so many friends. 8am class is the worst thing in the world and poor helpless students are forced to wake up at 7am and listen to BULLSHIT! Internally screaming is the act of expressing strong emotion inside while not showing it physically and has been a form of therapy in many places like corporations, colleges, and single people on dates. Men with no lives and internally screaming can be seen as coping mechanisms for dealing with the rigors of 8am class. Ultimately, these two coping mechanism are important for making it through the day.\nMain Idea: The text suggests that men with no lives and internally screaming are important coping mechanisms for dealing with the rigors of 8am class. ` +
-  essayPrompt;
+const essayCreation = (essay) => [
+  {
+    role: 'system',
+    content: `You correct grammar and capitalization of an essay and return the title, essay, and a sentence that describes the main idea of that essay.`,
+  },
+  {
+    role: 'user',
+    content: `From Hitler to Cheetos: The Evolution of Coca Cola\n\nThe evolution of Coca Cola has had the United States on the edges of their seats. From Hitler to Cheetos, Coca Cola has been a topic of discussion for many years. Because of Chester the cheeta is the mascot for cheetos and I wish I could be his friend. many folks are wondering what will happen next! Coca Cola is not short on surprises and it's hard to predict what will happen next!`,
+  },
+  {
+    role: 'assistant',
+    content: `Title: From Hitler to Cheetos: The Evolution of Coca Cola\nEssay: The evolution of Coca Cola has had the United States on the edges of their seats. From Hitler to Cheetos, Coca Cola has been a topic of discussion for many years. Because of Chester the cheeta is a mascot for cheetos and I wish I could be his friend, many folks are wondering what will happen next! Coca Cola is not short on surprises and it's hard to predict what will happen next!\nMain Idea: Because of Hitler and Cheetos, Coca Cola has been a topic of discussion and one reason is because Chester the Cheeta is the mascot for cheetos and I want to be his friend.`,
+  },
+  {
+    role: 'user',
+    content: essay,
+  },
+];
 
 module.exports = {
   client: client,

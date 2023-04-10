@@ -16,6 +16,7 @@
     "cross-env": "^7.0.3",
     "discord.js": "14.8.0",
     "dotenv": "^16.0.2",
+    "faker": "^6.6.6",
     "fuse.js": "^6.6.2",
     "list.js": "^2.3.1",
     "openai": "^3.2.1",
@@ -26,6 +27,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@faker-js/faker": "^7.6.0",
     "nodemon": "^2.0.20"
   }
 }

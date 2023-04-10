@@ -4,7 +4,7 @@ const {
   monsterDoesNotKnowMessages,
   subjectMessages,
 } = require('../chat/constants');
-const Fuse = require('fuse.js');
+const { AttachmentBuilder } = require('discord.js');
 const cosineSimilarity = require('compute-cosine-similarity');
 const logger = require('../logger');
 const { getMonster, createUser, updateMonster } = require('../database/utils');
@@ -15,32 +15,27 @@ const createWhatMonsterKnowsArray = (monster) => {
   return knowledge.split(',').filter((item) => item !== '');
 };
 
-const options = {
-  includeScore: true,
-  shouldSort: true,
-  location: 0,
-  distance: 100,
-  maxPatternLength: 32,
-  minMatchCharLength: 1,
-};
-
 const createSubjectObject = (subjectResponse) => {
   subjectResponse = subjectResponse.data.choices[0].message.content;
+  console.log('subjectResponse', subjectResponse);
   const matchMainSubject = subjectResponse.match(/^Subject: (.+)/);
-  console.log(
-    'matchMainSubject',
-    matchMainSubject[1],
-    matchMainSubject[1].toLowerCase()
-  );
+  if (!matchMainSubject) {
+    return 'none';
+  }
   return matchMainSubject[1].toLowerCase();
 };
 
-const forceBotDefault = `[Stay in character! You are not an AI language model. Pretned to be Banana, a friendly and cute monster.]\n\n\n`;
+const forceBotDefault = `[Stay in character! You are not an AI language model. Pretend to be Banana, a friendly and cute monster.]\n\n\n`;
 const forceBotKnows = (context, topic) =>
-  `[Stay in character! You are not an AI language model. Pretend to be Banana, a friendly and cute monster. Respond with one or two sentences. You know about ${topic}. Pretend you wrote an essay about it called ${context.title}. Pretend you believe ${context.subject}. Do not change the subject!]\n\n\n`;
-const forceBotDoesNotKnow =
-  '[Stay in character! Pretend you are not an AI language model. Pretend you are Banana, a friendly and cute monster. Pretend you do not know what the user is talking about]\n\n\n';
-const createMessageHistory = (previousMessages, doesKnow, context, topic) => {
+  `[Stay in character! You are not an AI language model. Pretend to be Banana, a friendly and cute monster. Respond with one or two sentences. You know about ${topic}. Pretend you wrote an essay about it called ${context.title}. Pretend you believe ${context.mainIdea}.]\n\n\n`;
+const forceBotDoesNotKnow = (topic) =>
+  `[Stay in character! Pretend you are not an AI language model. Pretend you are Banana, a friendly and cute monster. Pretend you do not know about ${topic}]\n\n\n`;
+const createMessageHistory = ({
+  previousMessages,
+  doesKnow,
+  context,
+  topic,
+}) => {
   let res = [];
 
   const previousMessagesArr = Array.from(previousMessages.values());
@@ -61,7 +56,7 @@ const createMessageHistory = (previousMessages, doesKnow, context, topic) => {
         } else if (doesKnow && !context && !topic) {
           cont = forceBotDefault + curr.content;
         } else {
-          cont = forceBotDoesNotKnow + curr.content;
+          cont = forceBotDoesNotKnow(topic) + curr.content;
         }
       }
       res.push({
@@ -95,6 +90,7 @@ const defaultKnowledge = [
   'undefined',
   'compliment',
   'gratitude',
+  'monster town',
 ];
 
 module.exports = async (event) => {
@@ -155,8 +151,8 @@ module.exports = async (event) => {
         });
       }
       ranked = ranked.sort((a, b) => (b.similarity > a.similarity ? 1 : -1));
-
-      doesKnow = ranked[0].similarity > 0.8;
+      console.log('ranked123', ranked);
+      doesKnow = ranked[0].similarity >= 0.825;
       if (doesKnow) {
         const metaData = await JSON.parse(monster.metadata);
         metaDataSubject = metaData[ranked[0].subject];
@@ -167,26 +163,28 @@ module.exports = async (event) => {
 
     if (doNotEmbed && !doesKnow) {
       console.log(
-        'created message',
-        monsterMessages(event, createMessageHistory(messages, true))
+        'createMessageHistory({ previousMessages: messages, doesKnow: true })',
+        createMessageHistory({ previousMessages: messages, doesKnow: true })
       );
-
       const chatResponse = await client.createChatCompletion({
         model: 'gpt-3.5-turbo',
         temperature: 0.99,
         n: 1,
-        messages: monsterMessages(event, createMessageHistory(messages, true)),
+        messages: monsterMessages(
+          event,
+          createMessageHistory({ previousMessages: messages, doesKnow: true })
+        ),
       });
 
-      event.reply(chatResponse.data.choices[0].message);
+      await event.reply(chatResponse.data.choices[0].message);
     } else if (doesKnow) {
-      console.log('EFKLSEFJLSEF', ranked[0], metaDataSubject);
-      const messageHistory = createMessageHistory(
-        messages,
-        true,
-        metaDataSubject,
-        ranked[0].subject
-      );
+      const messageHistory = createMessageHistory({
+        previousMessages: messages,
+        doesKnow: true,
+        context: metaDataSubject,
+        topic: ranked[0].subject,
+      });
+      console.log('messageHistory123', messageHistory);
       const chatResponse = await client.createChatCompletion({
         model: 'gpt-3.5-turbo',
         temperature: 0.99,
@@ -195,21 +193,55 @@ module.exports = async (event) => {
         messages: monsterMessages(event, messageHistory),
       });
 
-      event.reply(chatResponse.data.choices[0].message);
+      await event.reply(chatResponse.data.choices[0].message);
     } else {
+      console.log(
+        'createMessageHistory({ previousMessages: messages, doesKnow: true })',
+        createMessageHistory({
+          previousMessages: messages,
+          doesKnow: false,
+          topic: subject,
+        })
+      );
       const chatResponse = await client.createChatCompletion({
         model: 'gpt-3.5-turbo',
         temperature: 0.99,
         n: 1,
         messages: monsterDoesNotKnowMessages(
           event,
-          createMessageHistory(messages, false)
+          createMessageHistory({
+            previousMessages: messages,
+            doesKnow: false,
+            topic: subject,
+          })
         ),
       });
-      event.reply(chatResponse.data.choices[0].message);
+
+      await event.reply(chatResponse.data.choices[0].message);
+      if (monster.level === 1) {
+        const file = new AttachmentBuilder(
+          '/Users/baileymckelway/Documents/VS-STUDIO/StudyMonsterz/src/assets/teach_example.png'
+        );
+
+        await event.reply({
+          content: '',
+          embeds: [
+            {
+              title: 'How to teach your Study Monster',
+              description:
+                'You can teach your monster by typing /teach and then writing about the subject you want to teach it! Write everything you know about that one subject. Even if it is silly your Study Monster still wants to learn about it! Check out the image below for an example!',
+              color: 14588438,
+              image: {
+                url: 'attachment://teach_example.png',
+              },
+            },
+          ],
+          files: [file],
+        });
+      }
     }
   } catch (e) {
     event.reply('Can you say that again?');
-    console.log(e.response);
+    console.log(e);
   }
 };
