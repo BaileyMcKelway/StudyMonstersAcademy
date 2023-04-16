@@ -15,4 +15,5 @@ module.exports = {
   forceDbReset: process.env.FORCE_DB_RESET === 'true',
   openAIKey: process.env.OPENAI_KEY,
   openAIOrganization: process.env.OPENAI_ORGANIZATION,
+  serverId: process.env.SERVER_ID,
 };

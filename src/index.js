@@ -14,6 +14,7 @@ const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildMembers,
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.DirectMessages,
     GatewayIntentBits.DirectMessageReactions,
@@ -40,8 +41,10 @@ client.commands = new Collection();
   logger.info(`Completed database connection`);
 
   client.on('ready', ready);
-  client.on('interactionCreate', interactionCreate);
-  client.on('messageCreate', messageCreate);
+  client.on('interactionCreate', (interaction) =>
+    interactionCreate(interaction, client)
+  );
+  client.on('messageCreate', (message) => messageCreate(message, client));
 
   logger.info('Authenticating with Discord');
   await client.login(discordToken);

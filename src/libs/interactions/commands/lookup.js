@@ -49,7 +49,7 @@ module.exports = {
               },
               {
                 name: `Experience 📈`,
-                value: `${monster.experience} / ${monster.level * 200 + 100}`,
+                value: `${monster.experience} / ${monster.level * 100 + 100}`,
               },
             ],
           },
@@ -74,8 +74,8 @@ module.exports = {
       for (let i = 0; i < essays.length; i++) {
         res += `- ${essays[i].title}\n`;
 
-        if (i % 20 === 0) {
-          if (i === 20) {
+        if (i % 10 === 0) {
+          if (i === 10) {
             await interaction.editReply({
               content: '',
               embeds: [
@@ -87,7 +87,7 @@ module.exports = {
               ],
             });
             res = '';
-          } else if (i > 20) {
+          } else if (i > 10) {
             await interaction.followUp({
               content: '',
               embeds: [
@@ -102,7 +102,7 @@ module.exports = {
           }
         }
       }
-      if (essays.length < 20) {
+      if (essays.length < 10) {
         await interaction.editReply({
           content: '',
           embeds: [
@@ -157,7 +157,7 @@ module.exports = {
             color: 14588438,
             fields: [
               {
-                name: `${createWhatMonsterKnowsArray(knowledge).length}/415`,
+                name: `${createWhatMonsterKnowsArray(knowledge).length}/150`,
                 value: '',
               },
               {

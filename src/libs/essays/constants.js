@@ -87,10 +87,32 @@ const businessAndEconomics = (topicA, topicB, topicC) => {
       title: `From ${topicB.subject} to ${topicC.subject}: The Evolution of ${topicA.subject}`,
       text: `The evolution of ${topicA.subject} has had the United States on the edges of their seats. From ${topicB.subject} to ${topicC.subject}, ${topicA.subject} has been a topic of discussion for many years. Because of ${topicC.ideaB} many folks are wondering what will happen next! ${topicA.subject} is not short on surprises and it's hard to predict what will happen next!`,
     },
+    {
+      title: `The Econmics of ${topicA.subject}: ${topicB.subject} vs. ${topicC.subject}`,
+      text: `The economics of ${topicA.subject} has been an evolving field. As the industry continues to grow, there are two main systems of thought in regards to ${topicA.subject}: ${topicB.subject} and ${topicC.subject}. Each system has its own set of pros and cons, with ${topicB.ideaA} being the main point of contention. Ultimately, the impact of ${topicA.subject} will depend on the decision made by industry leaders, as well as the general public. It is important to weigh the pros and cons of both systems in order to make an informed decision.`,
+    },
+    {
+      title: `The Role of ${topicA.subject} in ${topicB.subject} and ${topicC.subject}`,
+      text: `${topicA.subject} has always been a part of human life and culture, but it has taken on a new significance in the modern age. In the realms of ${topicB.subject} and ${topicC.subject}, the role of ${topicA.subject} is changing rapidly. It is becoming increasingly important to understand the impact that ${topicA.subject} has on both ${topicB.subject} and ${topicC.subject}. It is also important to consider the implications of its use on society as a whole. By understanding the role of ${topicA.subject} in ${topicB.subject} and ${topicC.subject}, we can ensure that it is used in a responsible manner.`,
+    },
+    {
+      title: `The Financial Benefits of ${topicA.subject} in ${topicB.subject} and ${topicC.subject}`,
+      text: `The financial benefits of ${topicA.subject} cannot be ignored. It has the potential to revolutionize the way we conduct business in ${topicB.subject} and ${topicC.subject}. With the potential to increase efficiency and reduce waste, it is an attractive proposition. However, it is important to consider the potential risks associated with utilizing ${topicA.subject}. The financial impact of ${topicA.subject} in ${topicB.subject} and ${topicC.subject} must be carefully examined before making an informed decision. The economic benefits must be balanced with the potential risks to ensure the most beneficial outcome.`,
+    },
+    {
+      title: `The Future of ${topicA.subject}: ${topicB.subject} or ${topicC.subject}?`,
+      text: `The future of ${topicA.subject} is an exciting prospect. With the potential to revolutionize the way we use technology and conduct business, it is important to consider the implications of utilizing either ${topicB.subject} or ${topicC.subject}. Both have their own advantages and drawbacks, with ${topicB.ideaA} being one of the key considerations. Ultimately, the decision must take into account the potential benefits and risks, as well as the potential implications for society. The future of ${topicA.subject} is in our hands and will surely be an exciting development.`,
+    },
+    {
+      title: `The Relationship Between ${topicA.subject}, ${topicB.subject} and ${topicC.subject}`,
+      text: `The relationship between ${topicA.subject}, ${topicB.subject} and ${topicC.subject} has long been debated. With the rise of technology, the connection between the three is becoming increasingly important. It has been suggested that ${topicA.ideaB}. However, some experts argue that the relationship between ${topicA.subject}, ${topicB.subject} and ${topicC.subject} is more complex than that. Ultimately, it is up to industry leaders, academics, and the general public to determine the best course of action in order to maximize the potential of all three.`,
+    },
+    {
+      title: `The Effect of ${topicA.subject} on ${topicB.subject} and ${topicC.subject}`,
+      text: `The effect of ${topicA.subject} on ${topicB.subject} and ${topicC.subject} is a widely discussed topic. In recent years, ${topicA.subject} has grown in prominence, with many people considering the implications it has on both ${topicB.subject} and ${topicC.subject}. It is important to consider the impact of ${topicA.subject} in regard to both ${topicB.subject} and ${topicC.subject}, as this could have far reaching implications. It is important to consider the potential benefits and risks associated with ${topicA.subject} in order to make an informed decision.`,
+    },
   ];
-  // `The Importance of ${topicA.subject} in ${topicB.subject} and ${topicC.subject}`,
-  //   `The Econmics of ${topicA.subject}: ${topicB.subject} vs. ${topicC.subject}`,
-  //   `The Role of ${topicA.subject} in ${topicB.subject} and ${topicC.subject}`,
+
   return businessAndEconomicsEssays[
     Math.floor(Math.random() * businessAndEconomicsEssays.length)
   ];
@@ -98,9 +120,32 @@ const businessAndEconomics = (topicA, topicB, topicC) => {
 
 const educationAndPedagogy = (topicA, topicB, topicC) => {
   const educationAndPedagogyEssays = [
-    `The Need for ${topicC.subject} in ${topicA.subject} and ${topicB.subject}`,
-    `Should ${topicA.subject} be Mandatory? An Argument for ${topicB.subject} and ${topicC.subject}`,
+    {
+      title: `The Need for ${topicC.subject} in ${topicA.subject} and ${topicB.subject}`,
+      text: `It is no secret that ${topicA.subject} and ${topicB.subject} are two of the most important aspects of our society. However, due to the unique nature of these topics, there is a need for ${topicC.subject} in order to ensure the most successful outcome. This is especially true due to ${topicC.ideaA}. Without ${topicC.subject}, the potential impacts on ${topicA.subject} and ${topicB.subject} could be dire. Thus, it is important to recognize the importance of ${topicC.subject} and the need to prioritize its implementation.`,
+    },
+    {
+      title: `Should ${topicA.subject} be Mandatory? An Argument for ${topicB.subject} and ${topicC.subject}`,
+      text: ` The debate over whether or not ${topicA.subject} should be mandatory has been ongoing for some time. Supporters of mandatory ${topicA.subject} argue that ${topicB.ideaA}, while opponents suggest that otherwise. In light of this, it is important to consider both sides of the argument in order to make an informed decision. Ultimately, the introduction of mandatory ${topicA.subject} could be beneficial if ${topicB.subject} and ${topicC.subject} are taken into consideration. It is only through the combination of both that we can ensure the most successful outcome.`,
+    },
+    {
+      title: `The Value of ${topicA.subject} in Promoting ${topicB.subject} and ${topicC.subject}`,
+      text: `${topicA.subject} has long been valued for its ability to promote both ${topicB.subject} and ${topicC.subject}. This is due to ${topicA.ideaB}. ${topicA.subject} is able to provide a valuable platform for constructive conversation and collaboration between individuals with different opinions and perspectives. Ultimately, it is through ${topicA.subject} that we can foster greater understanding of ${topicB.subject} and ${topicC.subject} and find common ground.`,
+    },
+    {
+      title: `The Importance of ${topicA.subject} in Developing ${topicB.subject} and ${topicC.subject}`,
+      text: `The importance of ${topicA.subject} in developing ${topicB.subject} and ${topicC.subject} cannot be overstated. It is ${topicA.ideaB} that has allowed for them to grow and develop over the years. While ${topicB.subject} and ${topicC.subject} are often dismissed as mere hobbies, the truth is that they are incredibly important facets of society that should not be overlooked. Without ${topicA.subject}, these fields would not be able to thrive and reach their full potential.`,
+    },
+    {
+      title: `The Power of ${topicA.subject}: Using ${topicB.subject} and ${topicC.subject} to Enhance Learning`,
+      text: `${topicA.subject} has the power to transform learning for the better. By utilizing ${topicB.subject} and ${topicC.subject}, ${topicA.subject} has the capability to enhance the learning process in ways that traditional methods cannot. ${topicA.ideaB}, for example, has been proven to increase student engagement and understanding. Additionally, ${topicA.subject} offers students a new way to connect with their material and gain further insight into the topic. Thus, it is clear that ${topicA.subject} is an invaluable tool for educators and students alike.`,
+    },
+    {
+      title: `The Science of ${topicA.subject}: Strategies for Enhancing ${topicB.subject} and ${topicC.subject}`,
+      text: `The science of ${topicA.subject} has become an increasingly popular field, as it offers insight into how to better understand and enhance ${topicB.subject} and ${topicC.subject}. Researchers have found ${topicA.ideaB} to be a promising strategy for increasing student’s understanding of the material. Other strategies include ${topicC.ideaA}, which has been shown to improve student’s performance in the classroom. Overall, the science of ${topicA.subject} provides invaluable strategies for enhancing ${topicB.subject} and ${topicC.subject}, making it an essential tool for educators.`,
+    },
   ];
+
   return educationAndPedagogyEssays[
     Math.floor(Math.random() * educationAndPedagogyEssays.length)
   ];
@@ -108,10 +153,32 @@ const educationAndPedagogy = (topicA, topicB, topicC) => {
 
 const healthAndMedicine = (topicA, topicB, topicC) => {
   const healthAndMedicineEssays = [
-    `The Pros and Cons of ${topicA.subject}: Is it the Solution for ${topicB.subject} and  ${topicC.subject}?`,
-    `The Stigma of ${topicA.subject}: Why We Need to Talk More About ${topicB.subject} and ${topicC.subject}`,
-    `The Debate on ${topicA.subject}: An Argument for ${topicB.subject} and ${topicC.subject}`,
+    {
+      title: `The Pros and Cons of ${topicA.subject}: Is it the Solution for ${topicB.subject} and  ${topicC.subject}?`,
+      text: `The debate over the pros and cons of ${topicA.subject} has been ongoing between doctors for some time. On one hand, ${topicA.ideaA}. On the other hand, ${topicA.subject} has its drawbacks, such as ${topicB.ideaA}, which can be challenging to overcome. Ultimately, the decision to utilize ${topicA.subject} for ${topicB.subject} and ${topicC.subject} comes down to weighing the pros and cons in order to determine what is best for each individual situation.`,
+    },
+    {
+      title: `The Stigma of ${topicA.subject}: Why We Need to Talk More About ${topicB.subject} and ${topicC.subject}`,
+      text: `Over the years, ${topicA.subject} has gained a negative reputation among certain sections of society, leading to reluctance to discuss its potential risks and benefits. In order to properly address the issue of ${topicB.subject} and ${topicC.subject}, we must first address the underlying stigma associated with ${topicA.subject}. People who are unwilling to talk about the implications of ${topicA.subject} for ${topicB.subject} and ${topicC.subject} are doing themselves, and society, an injustice. We must open up the conversation and discuss the pros and cons of ${topicA.subject}, and only then can we arrive at a decision that benefits everyone.`,
+    },
+    {
+      title: `The Debate on ${topicA.subject}: An Argument for ${topicB.subject} and ${topicC.subject}`,
+      text: `As the debate on ${topicA.subject} continues to rage, one thing is certain: it represents a viable solution for both ${topicB.subject} and ${topicC.subject}. This is because ${topicA.ideaA}. Which allows for ${topicC.ideaB} The pros and cons of ${topicA.subject} must be carefully considered, but it is clear that it is a solution worth pursuing for ${topicB.subject} and ${topicC.subject}.`,
+    },
+    {
+      title: `The Future of ${topicA.subject}: How ${topicB.subject} and ${topicC.subject} Are Transforming ${topicA.subject}`,
+      text: `As the landscape of ${topicA.subject} continues to evolve, ${topicB.subject} and ${topicC.subject} are becoming more prevalent. This is because ${topicB.ideaA}. For these reasons, ${topicA.subject} is being transformed to meet the needs of ${topicB.subject} and ${topicC.subject}. The debate around ${topicA.subject} is ongoing, but it is clear that it has potential to revolutionize both ${topicB.subject} and ${topicC.subject}.`,
+    },
+    {
+      title: `The Benefits of ${topicB.subject} and ${topicC.subject} for ${topicA.subject}`,
+      text: `The debate around ${topicA.subject} often overlooks the potential benefits that ${topicB.subject} and ${topicC.subject} can bring. This is because ${topicB.ideaB}. This has the potential to have a major impact on ${topicA.subject} by allowing for ${topicC.ideaB}. The debate on ${topicA.subject} is complex and multifaceted, but it is clear that the potential benefits of both ${topicB.subject} and ${topicC.subject} must be considered.`,
+    },
+    {
+      title: `The Power of ${topicA.subject}: How ${topicA.subject} Can Improve ${topicB.subject} and ${topicC.subject}`,
+      text: `${topicA.subject} is emerging as a powerful tool for improving both ${topicB.subject} and ${topicC.subject}. This is because ${topicA.ideaB}. This has the potential to revolutionize ${topicB.subject} by allowing for ${topicC.ideaB}. The debate on ${topicA.subject} is ongoing, but it is clear that it has the potential to have a major impact on both ${topicB.subject} and ${topicC.subject}.`,
+    },
   ];
+
   return healthAndMedicineEssays[
     Math.floor(Math.random() * healthAndMedicineEssays.length)
   ];
@@ -119,10 +186,32 @@ const healthAndMedicine = (topicA, topicB, topicC) => {
 
 const environmentAndSustainability = (topicA, topicB, topicC) => {
   const environmentAndSustainabilityEssays = [
-    `${topicA.subject} and Its Effects on ${topicB.subject} and ${topicC.subject}`,
-    `The Ethics of ${topicA.subject} in ${topicB.subject} and ${topicC.subject}`,
-    `The Need for ${topicA.subject} to Combat ${topicB.subject} and ${topicC.subject}`,
+    {
+      title: `Is the development of ${topicA.subject} a threat to ${topicB.subject} and ${topicC.subject}?`,
+      text: `The development of ${topicA.subject} is a rapidly advancing field with the potential to change the ${topicB.subject} and ${topicC.subject}. However, as with any technological advancement, it is important to consider the potential threats and ethical implications that come with it. One concern is ${topicA.ideaB}. What is it's impact on ${topicB.subject} and ${topicC.subject}? It is crucial that we prioritize human safety and ethical considerations when developing ${topicA.subject}.`,
+    },
+    {
+      title: `${topicA.subject} and Its Effects on ${topicB.subject} and ${topicC.subject}.`,
+      text: `The debate surrounding ${topicA.subject} has recently been brought to the forefront of the public discourse. It is clear that ${topicA.subject} has the potential to revolutionize ${topicB.subject} and ${topicC.subject} because ${topicA.ideaA}. However, this potential for ${topicA.subject} to change the world is not without its concerns. There is growing concern about ${topicB.ideaB}. ${topicA.subject} is sure to have a major impact on both ${topicB.subject} and ${topicC.subject}, and so it is essential that we strike a balance between progress and preservation.`,
+    },
+    {
+      title: `The Ethics of ${topicA.subject} in ${topicB.subject} and ${topicC.subject}`,
+      text: `The ethical implications of ${topicA.subject} are largely overlooked when discussing its potential impacts on ${topicB.subject} and ${topicC.subject}. We must consider the ethical implications of ${topicA.subject}, because ${topicB.ideaA}. In addition, there are questions of privacy in the ever increasing role that ${topicA.subject} plays in our lives. The debate around ${topicA.subject} is complex, but it is clear that we must consider its ethical implications in order to ensure that ${topicB.subject} and ${topicC.subject} are not irreparably affected.`,
+    },
+    {
+      title: `The Need for ${topicA.subject} to Combat ${topicB.subject} and ${topicC.subject}`,
+      text: `In order to combat ${topicB.subject} and ${topicC.subject}, we must embrace ${topicA.subject} and its potential to help us attain a sustainable future. The use of ${topicA.subject} is key to achieving this goal because ${topicA.ideaB}. In addition, ${topicA.subject} have the potential to help us reduce our environmental impact because ${topicC.ideaB}. It is clear that the potential of ${topicA.subject} to help reduce ${topicB.subject} and ${topicC.subject} is largely untapped. We must work together to ensure that we are taking advantage of this potential and using it to create a more sustainable world.`,
+    },
+    {
+      title: `The Illusion of ${topicA.subject}: Its Effect on ${topicB.subject} and ${topicC.subject}`,
+      text: `The current debate around ${topicA.subject} and its potential impact on ${topicB.subject} and ${topicC.subject} often overlooks the fact that the potential of ${topicA.subject} is often an illusion. Many believe ${topicA.ideaA}. However, this is not the case. We must be aware of the limitations of ${topicA.subject} in order to ensure that we are using them to their fullest potential. Taking this into consideration, we can ensure that we are taking steps towards a more sustainable future.`,
+    },
+    {
+      title: `The High Cost of ${topicA.subject}: Why We Need to Prioritize ${topicB.subject} Over ${topicC.subject}`,
+      text: `The cost of implementing ${topicA.subject} is often overlooked when discussing their potential impact on ${topicB.subject} and ${topicC.subject}. We must consider the costs of utilizing ${topicA.subject}, as the high cost of implementation could lead to a reduced focus on ${topicB.subject} over ${topicC.subject}. ${topicA.ideaA} means that the cost  must be carefully managed in order to ensure that ${topicB.ideaB}. It is essential that we prioritize ${topicB.subject} over ${topicC.subject} in order to ensure that we are taking steps towards a more sustainable future.`,
+    },
   ];
+
   return environmentAndSustainabilityEssays[
     Math.floor(Math.random() * environmentAndSustainabilityEssays.length)
   ];
@@ -130,17 +219,35 @@ const environmentAndSustainability = (topicA, topicB, topicC) => {
 
 const sportsAndRecreation = (topicA, topicB, topicC) => {
   const sportsAndRecreationEssays = [
-    `The Psychology of ${topicA.subject}: How ${topicB.subject} Stay Motivated and Focused with ${topicC.subject}`,
-    `The Culture of ${topicA.subject}: How ${topicB.subject} Reflect ${topicC.subject} Values and Beliefs`,
-    `The History of the ${topicA.subject}: A Look Back at ${topicA.subject} effect on ${topicB.subject} and ${topicC.subject}`,
+    {
+      title: `The Psychology of ${topicA.subject}: How ${topicB.subject} Stay Motivated and Focused with ${topicC.subject}`,
+      text: `The key to successful ${topicA.subject} is motivation and focus. This can be achieved through ${topicB.subject} and ${topicC.subject}. It is said that ${topicB.ideaA}. However, ${topicC.ideaB}. It is important to recognize the power that ${topicB.subject} and ${topicC.subject} have to motivate and focus ${topicA.subject}. Understanding the psychology of ${topicA.subject} and how to use ${topicB.subject} and ${topicC.subject} to keep them motivated and focused can have far-reaching effects within the industry.`,
+    },
+    {
+      title: `The Culture of ${topicA.subject}: How ${topicB.subject} Reflect ${topicC.subject} Values and Beliefs`,
+      text: `The culture of ${topicA.subject} is often reflective of ${topicC.subject} beliefs and values. These values can be seen through ${topicB.subject}. It is said that ${topicB.ideaA}. This means that ${topicC.ideaB}. As such, it is important to recognize the culture of ${topicA.subject} and how ${topicB.subject} can be used to challenge or affirm ${topicC.subject} beliefs and values. Doing so can have major repercussions for society and for the future of ${topicA.subject}.`,
+    },
+    {
+      title: `The History of the ${topicA.subject}: A Look Back at ${topicA.subject} effect on ${topicB.subject} and ${topicC.subject}`,
+      text: `The history of the ${topicA.subject} dates back centuries, with its effects having been felt on ${topicB.subject} and ${topicC.subject}. It is said that ${topicA.ideaA}. This has led to ${topicB.ideaB}. On the other hand, ${topicC.ideaB}. Examining the history of the ${topicA.subject} and its effects on ${topicB.subject} and ${topicC.subject} can provide valuable insights into how to improve the environment and sustainability of ${topicA.subject}.`,
+    },
   ];
+
   return sportsAndRecreationEssays[
     Math.floor(Math.random() * sportsAndRecreationEssays.length)
   ];
 };
 
 const religionAndSpirituality = (topicA, topicB, topicC) => {
-  return `The Controversy Surrounding ${topicA.subject} and ${topicB.subject}`;
+  const religionAndSpiritualityEssays = [
+    {
+      title: `Why ${topicA.subject} Is Important than ${topicB.subject} and ${topicC.subject}`,
+      text: `${topicA.subject} is oftentimes considered more important than ${topicB.subject} and ${topicC.subject}. This is because ${topicA.ideaA}. As such, it is necessary to consider the importance of ${topicA.subject} in comparison to ${topicB.subject} and ${topicC.subject}.`,
+    },
+  ];
+  return religionAndSpiritualityEssays[
+    Math.floor(Math.random() * religionAndSpiritualityEssays.length)
+  ];
 };
 
 module.exports = {

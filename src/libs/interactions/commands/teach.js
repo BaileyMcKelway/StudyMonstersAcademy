@@ -6,7 +6,7 @@ const {
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { teachingEndings } = require('../teachConstants');
 const {
-  client,
+  openai,
   trueOrFalseMessages,
   subjectAndIdeasMessages,
 } = require('../../chat/constants');
@@ -14,6 +14,47 @@ const { createNote, getNotes } = require('../../database/utils');
 
 const isSlashCmd = (interaction) => interaction.type === 2;
 const isNotBot = (m) => m?.author?.bot !== true;
+
+const teachFillers = () => {
+  const teachFillersText = [
+    'This information is interesting!',
+    'This is very complex!',
+    'I am going to need some coffee after this!',
+    'My brain is working hard.',
+    'This is all fascinating stuff.',
+    'This is a challenging topic.',
+    'Can not wait to apply this information in an essay!',
+    'Hmm yes very interesting.',
+    'I am learning so much!',
+    'Interesting!',
+    'Wow, this is amazing!',
+    'This is blowing my mind!',
+    'I am shooketh by this!',
+    'I have never heard of this!',
+    'My mind is completely blown!',
+    'This is so eye-opening!',
+    'I am completely captivated by this.',
+    'I am loving this new knowledge!',
+  ];
+  const teachFillersQuestionsText = [
+    'Wait I have a question!',
+    'Hold on!',
+    'Wait a second!',
+    'Wait!',
+    'Hold up!',
+    'Wait a minute!',
+    'Hold on a second!',
+    'Wait a second!',
+    'Hold up a second!',
+  ];
+
+  return [
+    teachFillersText[Math.floor(Math.random() * teachFillersText.length)],
+    teachFillersQuestionsText[
+      Math.floor(Math.random() * teachFillersQuestionsText.length)
+    ],
+  ];
+};
 
 const parseQuestionAndAnwser = (inputString) => {
   console.log('inputString123', inputString);
@@ -93,12 +134,23 @@ module.exports = {
       if (isSlashCmd(interaction)) {
         await interaction.deferReply({ ephemeral: true });
       }
+      if (interaction.options.getString('teach_input').length < 85) {
+        await interaction.editReply('I need more information than that!');
+        return;
+      }
+      if (interaction.options.getString('teach_input').length >= 2000) {
+        await interaction.editReply(
+          'Oof! That is a lot of information for a little monster!'
+        );
+        return;
+      }
       const notes = await getNotes(interaction.user);
 
-      if (3 <= notes.length) {
-        return interaction.editReply(
+      if (notes.length >= 3) {
+        await interaction.editReply(
           'I have all the notes I can handle! Time to write an essay! Just type `/essay` to get started!'
         );
+        return;
       }
 
       const userId = interaction.user.id;
@@ -132,7 +184,7 @@ module.exports = {
       });
 
       if (isSlashCmd(interaction)) {
-        const trueOrFalseResponse = await client.createChatCompletion({
+        const trueOrFalseResponse = await openai.createChatCompletion({
           model: 'gpt-3.5-turbo',
           temperature: 0.1,
           n: 1,
@@ -151,7 +203,14 @@ module.exports = {
           text: interaction.options.getString('teach_input'),
         });
 
+        const fillers = teachFillers();
         await interaction.editReply({
+          content: fillers[0],
+        });
+        await interaction.followUp({
+          content: fillers[1],
+        });
+        await interaction.followUp({
           content: questionArray[0].question,
           components: [row],
         });
@@ -159,7 +218,12 @@ module.exports = {
       collector.on('collect', async (m) => {
         if (isNotBot(m) && !collector.checkEnd()) {
           const questions = questionsCache.get(userId).questions;
+          const filers = teachFillers();
           await m.reply({
+            content: filers[0],
+          });
+
+          await m.followUp({
             content: questions[collector.total].question,
             components: [row],
           });
@@ -175,7 +239,7 @@ module.exports = {
           await lastReply.deferReply({ ephemeral: true });
 
           const userQuestions = questionsCache.get(userId);
-          const subjectAndMainIdeas = await client.createChatCompletion({
+          const subjectAndMainIdeas = await openai.createChatCompletion({
             model: 'gpt-3.5-turbo',
             temperature: 0.1,
             n: 1,
