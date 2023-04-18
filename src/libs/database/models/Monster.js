@@ -15,7 +15,7 @@ Monster.init(
     },
     experience: {
       type: Sequelize.DataTypes.INTEGER,
-      defaultValue: 0,
+      defaultValue: 199,
       allowNull: false,
       validate: {
         max: { args: [1100], msg: 'The maximum value for experience is 1100' },

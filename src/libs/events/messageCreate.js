@@ -1,6 +1,9 @@
 const {
   openai,
-  monsterMessages,
+  monsterMessagesBeginner,
+  monsterMessagesIntermediate,
+  monsterMessagesAdvanced,
+  monsterMessagesEndGame,
   monsterDoesNotKnowMessages,
   subjectMessages,
 } = require('../chat/constants');
@@ -101,6 +104,7 @@ const defaultKnowledge = [
   'compliment',
   'gratitude',
   'monster town',
+  'dr. kiwano',
 ];
 
 module.exports = async (event, client) => {
@@ -125,8 +129,14 @@ module.exports = async (event, client) => {
     const guild = await client.guilds.cache.get(serverId);
     const member = await guild.members.fetch(event.author.id);
     const roles = await member.roles.cache.map((role) => role.name);
-
-    if (!roles.includes('Premium')) {
+    console.log(
+      'lskefjlksejfleksjfl',
+      !messages.find((m) => m.content.includes(`😄🥳 Awesome! My first essay!`))
+    );
+    if (
+      !roles.includes('Premium') &&
+      !messages.find((m) => m.content.includes(`😄🥳 Awesome! My first essay!`))
+    ) {
       const file = new AttachmentBuilder(
         '/Users/baileymckelway/Documents/VS-STUDIO/StudyMonsterz/src/assets/study_monster_academy.png'
       );
@@ -135,7 +145,7 @@ module.exports = async (event, client) => {
         content: '  ',
         embeds: [
           {
-            title: 'Subscribe to Study Monsters Academy continue! 💳',
+            title: 'Subscribe to Study Monsters Academy to continue! 💳',
             description:
               'You have reached the maximum amount of messages you can send to your study monster. Please subscribe to continue.',
             color: 14588438,
@@ -195,20 +205,19 @@ module.exports = async (event, client) => {
         });
       }
       ranked = ranked.sort((a, b) => (b.similarity > a.similarity ? 1 : -1));
-      console.log('ranked123', ranked);
       doesKnow = ranked[0].similarity >= 0.825;
-      kindaKnows = ranked[0].similarity < 0.825 && ranked[0].similarity >= 0.79;
+      kindaKnows = ranked[0].similarity < 0.825 && ranked[0].similarity >= 0.8;
       if (doesKnow || kindaKnows) {
         const metaData = await JSON.parse(monster.metadata);
         metaDataSubject = metaData[ranked[0].subject];
       }
     }
+    let monsterMessages = monsterMessagesBeginner;
+    if (monster.level >= 10) monsterMessages = monsterMessagesEndGame;
+    else if (monster.level >= 7) monsterMessages = monsterMessagesAdvanced;
+    else if (monster.level >= 3) monsterMessages = monsterMessagesIntermediate;
 
     if (doNotEmbed && !doesKnow) {
-      console.log(
-        'createMessageHistory({ previousMessages: messages, doesKnow: true })',
-        createMessageHistory({ previousMessages: messages, doesKnow: true })
-      );
       const chatResponse = await openai.createChatCompletion({
         model: 'gpt-3.5-turbo',
         temperature: 0.99,
@@ -227,7 +236,6 @@ module.exports = async (event, client) => {
         context: metaDataSubject,
         topic: ranked[0].subject,
       });
-      console.log('messageHistory123', messageHistory);
       const chatResponse = await openai.createChatCompletion({
         model: 'gpt-3.5-turbo',
         temperature: 0.99,
@@ -255,14 +263,6 @@ module.exports = async (event, client) => {
 
       await event.reply(chatResponse.data.choices[0].message);
     } else {
-      console.log(
-        'createMessageHistory({ previousMessages: messages, doesKnow: true })',
-        createMessageHistory({
-          previousMessages: messages,
-          doesKnow: false,
-          topic: subject,
-        })
-      );
       const chatResponse = await openai.createChatCompletion({
         model: 'gpt-3.5-turbo',
         temperature: 0.99,
@@ -290,7 +290,7 @@ module.exports = async (event, client) => {
             {
               title: 'How to teach your Study Monster',
               description:
-                'You can teach your monster by typing /teach and then writing about the subject you want to teach it! Write everything you know about that one subject. Even if it is silly your Study Monster still wants to learn about it! Check out the image below for an example!',
+                'You can teach your monster by typing `/teach` and then writing about the subject you want to teach it! Write everything you know about that one subject, even if it is silly. Your Study Monster still wants to learn about it! Check out the image below for an example.',
               color: 14588438,
               image: {
                 url: 'attachment://teach_example.png',

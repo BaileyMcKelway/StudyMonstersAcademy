@@ -14,7 +14,7 @@ const historyAndPolitics = (topicA, topicB, topicC) => {
     },
     {
       title: `The Relevance of ${topicA.subject} in ${topicB.subject} and ${topicC.subject}`,
-      text: `${topicA.subject}, ${topicB.subject}, and ${topicC.subject} are all very relevant to one another but there are some who deny this! Naysayers say that ${topicA.subject} is not relevant to ${topicB.subject} and ${topicC.subject} but this is not true. It takes a turn expert such as myself to see that the fact ${topicA.ideaB} is relevant to ${topicB.subject} and ${topicC.subject}. Only time will show these naysayers to be wrong!`,
+      text: `${topicA.subject}, ${topicB.subject}, and ${topicC.subject} are all very relevant to one another but there are some who deny this! Naysayers say that ${topicA.subject} is not relevant to ${topicB.subject} and ${topicC.subject} but this is not true. It takes a true expert such as myself to see that the fact, "${topicA.ideaB}" is relevant to ${topicB.subject} and ${topicC.subject}. Only time will show these naysayers to be wrong!`,
     },
   ];
   return historyAndPoliticsEssays[
@@ -64,7 +64,7 @@ const artsAndHumanities = (topicA, topicB, topicC) => {
   ];
 };
 
-const celebrity = (topicA, topicB, topicC) => {
+const celebritiesAndPeople = (topicA, topicB, topicC) => {
   const celebritiesEssays = [
     {
       title: `From ${topicB.subject} to ${topicC.subject}: The Evolution of ${topicA.subject}`,
@@ -250,16 +250,35 @@ const religionAndSpirituality = (topicA, topicB, topicC) => {
   ];
 };
 
+const foodAndBeverage = (topicA, topicB, topicC) => {
+  const foodAndBeverageEssays = [
+    {
+      title: `Why ${topicA.subject} Is Important than ${topicB.subject} and ${topicC.subject}`,
+      text: `${topicA.subject} is oftentimes considered more important than ${topicB.subject} and ${topicC.subject}. This is because ${topicA.ideaA}. As such, it is necessary to consider the importance of ${topicA.subject} in comparison to ${topicB.subject} and ${topicC.subject}.`,
+    },
+  ];
+  return foodAndBeverageEssays[
+    Math.floor(Math.random() * foodAndBeverage.length)
+  ];
+};
+
+const firstEssay = (topicA, topicB, topicC) => ({
+  title: `How My New Knowledge of ${topicC.subject} will get me into Monster Academy!`,
+  text: `My name is Banana and I love to roller skate. I plan on writing essays until I get into Monster Academy! Monster Academy is the most prestigious academy in all of Monster Town, so the competition to get in is pretty steep. However, with my new knowledge of ${topicC.subject}, taught to me by my new friend, I'm sure I will get in! Not a lot of people know that ${topicC.ideaA}. With my passion for roller skating and my new knowledge of ${topicC.subject}, I'm well on my way!`,
+});
+
 module.exports = {
   'History And Politics': historyAndPolitics,
   'Science And Technology': scienceAndTechnology,
   'Arts And Humanities': artsAndHumanities,
-  Celebrity: celebrity,
+  'Celebrities And People': celebritiesAndPeople,
   'Business And Economics': businessAndEconomics,
   'Education And Pedagogy': educationAndPedagogy,
   'Health And Medicine': healthAndMedicine,
   'Environment And Sustainability': environmentAndSustainability,
   'Sports And Recreation': sportsAndRecreation,
   'Religion And Spirituality': religionAndSpirituality,
+  'Food And Beverage': foodAndBeverage,
+  firstEssay: firstEssay,
   default: historyAndPolitics,
 };

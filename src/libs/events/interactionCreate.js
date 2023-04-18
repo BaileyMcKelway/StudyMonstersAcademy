@@ -19,7 +19,7 @@ module.exports = async (interaction, client) => {
           content: '  ',
           embeds: [
             {
-              title: 'Subscribe to Study Monsters Academy continue! 💳',
+              title: 'Subscribe to Study Monsters Academy to continue! 💳',
               description:
                 'You have reached the maximum amount of messages you can send to your study monster. Please subscribe to continue.',
               color: 14588438,

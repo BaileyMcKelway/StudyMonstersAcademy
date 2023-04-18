@@ -125,9 +125,10 @@ module.exports = {
       ];
 
       notes.forEach((note) => {
-        let value = note?.dataValues?.text;
+        let value =
+          '*Category: ' + note.category + '*\n\n' + note?.dataValues?.text;
         if (value.length > 500) {
-          value = note?.dataValues?.text.slice(0, 500) + '...';
+          value = value.slice(0, 500) + '...';
         }
 
         fields.push({

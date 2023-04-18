@@ -4,6 +4,7 @@ const logger = require('../../logger');
 module.exports = async ({ user, text, subject, ideas, quality, category }) => {
   logger.info(`Creating note [user_id=${user.id}]`);
   try {
+    subject = subject.replace(',', '');
     const note = await new Notes({
       user_id: user.id,
       text,
