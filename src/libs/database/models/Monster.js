@@ -47,6 +47,12 @@ Monster.init(
     paranoid: true,
     sequelize: db,
     modelName: 'Monster',
+    indexes: [
+      {
+        unique: false,
+        fields: ['user_id_and_type'],
+      },
+    ],
   }
 );
 

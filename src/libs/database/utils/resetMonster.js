@@ -1,21 +1,33 @@
-const { User, Monster, Notes } = require('../models');
+const { Monster, Notes, Essays } = require('../models');
 const logger = require('../../logger');
 const { TYPE } = require('../../global');
 
-module.exports = async ({ event }) => {
-  logger.info(`Creating user [user_id=${event.author.id} type=${TYPE}]`);
+module.exports = async ({ user }) => {
+  logger.info(`Updating monster [user_id=${user.id} type=${TYPE}]`);
   try {
-    const userIdAndType = event.author.id + TYPE;
-    await new User({
-      user_id: event.author.id,
-      user_id_and_type: userIdAndType,
-      discord_channel_id: event.channelId,
-    }).save();
+    const userIdAndType = user.id + TYPE;
+    const metadata = JSON.stringify({});
+    await Monster.update(
+      {
+        experience: 199,
+        level: 1,
+        knowledge: '',
+        metadata,
+      },
+      { where: { user_id_and_type: userIdAndType } }
+    );
 
-    const monster = await new Monster({
-      user_id_and_type: userIdAndType,
-      type: TYPE,
-    }).save();
+    await Notes.destroy({
+      where: {
+        user_id_and_type: userIdAndType,
+      },
+    });
+
+    await Essays.destroy({
+      where: {
+        user_id_and_type: userIdAndType,
+      },
+    });
 
     await new Notes({
       user_id_and_type: userIdAndType,
@@ -37,7 +49,7 @@ module.exports = async ({ event }) => {
       category: 'Celebrities And People',
     }).save();
 
-    return monster;
+    return;
   } catch (e) {
     console.log(e);
   }

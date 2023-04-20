@@ -5,7 +5,7 @@ const { getMonster } = require('../database/utils');
 
 module.exports = async (interaction, client) => {
   try {
-    let monster = await getMonster(interaction.user);
+    let monster = await getMonster({ user: interaction.user });
     if (monster.level >= 2) {
       const guild = await client.guilds.cache.get(serverId);
       const member = await guild.members.fetch(interaction.user.id);

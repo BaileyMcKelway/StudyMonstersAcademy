@@ -34,7 +34,7 @@ module.exports = {
 
     if (commandType === 'stats') {
       await interaction.deferReply({ ephemeral: true });
-      const monster = await getMonster(interaction.user);
+      const monster = await getMonster({ user: interaction.user });
       await interaction.editReply({
         content: '',
         embeds: [
@@ -148,7 +148,7 @@ module.exports = {
       });
     } else if (commandType === 'knowledge') {
       await interaction.deferReply({ ephemeral: true });
-      const { knowledge } = await getMonster(interaction.user);
+      const { knowledge } = await getMonster({ user: interaction.user });
       const knowledgeString = createWhatMonsterKnowsString(knowledge);
       await interaction.editReply({
         content: '',

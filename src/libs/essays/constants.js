@@ -16,6 +16,10 @@ const historyAndPolitics = (topicA, topicB, topicC) => {
       title: `The Relevance of ${topicA.subject} in ${topicB.subject} and ${topicC.subject}`,
       text: `${topicA.subject}, ${topicB.subject}, and ${topicC.subject} are all very relevant to one another but there are some who deny this! Naysayers say that ${topicA.subject} is not relevant to ${topicB.subject} and ${topicC.subject} but this is not true. It takes a true expert such as myself to see that the fact, "${topicA.ideaB}" is relevant to ${topicB.subject} and ${topicC.subject}. Only time will show these naysayers to be wrong!`,
     },
+    {
+      title: `Why ${topicA.subject} Is Important than ${topicB.subject} and ${topicC.subject}`,
+      text: `${topicA.subject} is oftentimes considered more important than ${topicB.subject} and ${topicC.subject}. This is because ${topicA.ideaA}. Most people don't consider ${topicB.subject} important because ${topicB.ideaA}, which is so trival. As such, it is necessary to consider the importance of ${topicA.subject} in comparison to ${topicB.subject} and ${topicC.subject}.`,
+    },
   ];
   return historyAndPoliticsEssays[
     Math.floor(Math.random() * historyAndPoliticsEssays.length)
@@ -250,15 +254,23 @@ const religionAndSpirituality = (topicA, topicB, topicC) => {
   ];
 };
 
-const foodAndBeverage = (topicA, topicB, topicC) => {
-  const foodAndBeverageEssays = [
+const animalsAndPets = (topicA, topicB, topicC) => {
+  const animalsAndPetsEssays = [
     {
-      title: `Why ${topicA.subject} Is Important than ${topicB.subject} and ${topicC.subject}`,
-      text: `${topicA.subject} is oftentimes considered more important than ${topicB.subject} and ${topicC.subject}. This is because ${topicA.ideaA}. As such, it is necessary to consider the importance of ${topicA.subject} in comparison to ${topicB.subject} and ${topicC.subject}.`,
+      title: `The Benefits of Adopting ${topicA.subject} over ${topicB.subject} and ${topicC.subject}`,
+      text: `When it comes to ${topicA.subject}, there are many advantages over ${topicB.subject} and ${topicC.subject}. One reason is ${topicA.ideaA}. Additionally, ${topicA.subject} has the ability to ${topicA.ideaB}. No one should adopt ${topicC.subject} because ${topicC.ideaB}. ${topicB.subject} is a bad choice because ${topicB.ideaB}. It is important to consider all of the pros and cons of ${topicA.subject} in relation to ${topicB.subject} and ${topicC.subject} before making a decision.`,
+    },
+    {
+      title: `The Rising Popularity of ${topicA.subject} and Its Impact on ${topicB.subject} and ${topicC.subject}`,
+      text: `The popularity of ${topicA.subject} has grown drastically in recent years. This has had an immense effect on both ${topicB.subject} and ${topicC.subject}. Because ${topicB.ideaA}, there was an increased use of ${topicA.subject}. As ${topicA.subject} become more widespread, it will have a greater impact on ${topicB.subject} and ${topicC.subject}. It is important to understand the effects of this trend so that we can ensure that it enhances rather than disempowers ${topicB.subject} and ${topicC.subject}.`,
+    },
+    {
+      title: `The Fascinating World of ${topicA.subject}: From ${topicB.subject} to ${topicC.subject}`,
+      text: `${topicA.subject} are fascinating creatures that have long captivated the attention and curiosity of humans. ${topicA.ideaA}. One curious behavior of this animal is their interaction with ${topicB.subject} and ${topicC.subject}. ${topicA.subect} are drawn to ${topicB.subject} because ${topicB.ideaB}. Also, without ${topicC.subject}, ${topicA.subject} would not be able to ${topicA.ideaB}. Overall, the world of ${topicA.subject} is a fascinating one!`,
     },
   ];
-  return foodAndBeverageEssays[
-    Math.floor(Math.random() * foodAndBeverage.length)
+  return animalsAndPetsEssays[
+    Math.floor(Math.random() * animalsAndPetsEssays.length)
   ];
 };
 
@@ -278,7 +290,7 @@ module.exports = {
   'Environment And Sustainability': environmentAndSustainability,
   'Sports And Recreation': sportsAndRecreation,
   'Religion And Spirituality': religionAndSpirituality,
-  'Food And Beverage': foodAndBeverage,
+  'Animals And Pets': animalsAndPets,
   firstEssay: firstEssay,
   default: historyAndPolitics,
 };

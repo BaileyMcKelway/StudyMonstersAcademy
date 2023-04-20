@@ -39,6 +39,12 @@ Notes.init(
     paranoid: true,
     sequelize: db,
     modelName: 'Notes',
+    indexes: [
+      {
+        unique: false,
+        fields: ['user_id_and_type'],
+      },
+    ],
   }
 );
 

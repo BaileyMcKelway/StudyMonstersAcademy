@@ -6,6 +6,7 @@ const createNote = require('./createNote');
 const createEssay = require('./createEssay');
 const updateMonster = require('./updateMonster');
 const deleteNotes = require('./deleteNotes');
+const resetMonster = require('./resetMonster');
 
 module.exports = {
   createUser,
@@ -16,4 +17,5 @@ module.exports = {
   getEssays,
   updateMonster,
   deleteNotes,
+  resetMonster,
 };

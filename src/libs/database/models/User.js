@@ -13,6 +13,12 @@ User.init(
       allowNull: false,
       primaryKey: true,
     },
+    user_id_and_type: {
+      type: DataTypes.STRING,
+      unique: true,
+      allowNull: false,
+      primaryKey: true,
+    },
     discord_channel_id: {
       type: DataTypes.STRING,
       unique: true,

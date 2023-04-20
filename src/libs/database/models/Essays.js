@@ -31,6 +31,12 @@ Essays.init(
     paranoid: true,
     sequelize: db,
     modelName: 'Essays',
+    indexes: [
+      {
+        unique: false,
+        fields: ['user_id_and_type'],
+      },
+    ],
   }
 );
 

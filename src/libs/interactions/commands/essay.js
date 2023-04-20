@@ -9,6 +9,7 @@ const {
   updateMonster,
   deleteNotes,
 } = require('../../database/utils');
+const { essayFillers } = require('../essayConstants');
 
 const removeLastPunctuation = (str) => {
   if (/[.,\/#!$%\^&\*;:{}=\-_`~()]/.test(str.slice(-1))) {
@@ -33,24 +34,26 @@ const calculateExperienceGained = ({ notes }) => {
 
 const createMonsterMetaData = async ({
   metadata,
-  noteTitles,
   essayTitle,
   essayMainIdea,
+  notes,
 }) => {
   const parsedMetaData = await JSON.parse(metadata);
-  parsedMetaData[noteTitles[0].toLowerCase()] = {
+  parsedMetaData[notes[0].subject.toLowerCase()] = {
     title: essayTitle,
     mainIdea: essayMainIdea,
+    notes: notes[0].ideas.replace('$$', ' Pretend you believe '),
   };
-  parsedMetaData[noteTitles[1].toLowerCase()] = {
+  parsedMetaData[notes[1].subject.toLowerCase()] = {
     title: essayTitle,
     mainIdea: essayMainIdea,
+    notes: notes[1].ideas.replace('$$', ' Pretend you believe '),
   };
-  parsedMetaData[noteTitles[2].toLowerCase()] = {
+  parsedMetaData[notes[2].subject.toLowerCase()] = {
     title: essayTitle,
     mainIdea: essayMainIdea,
+    notes: notes[2].ideas.replace('$$', ' Pretend you believe '),
   };
-  console.log('parsedMetaData123', parsedMetaData);
   return parsedMetaData;
 };
 
@@ -69,9 +72,9 @@ const handleMonsterExperience = async ({
   if (knowledgeArray.length < 150) {
     metadata = await createMonsterMetaData({
       metadata,
-      noteTitles,
       essayTitle: essayObject.title,
       essayMainIdea: essayObject.mainIdea,
+      notes,
     });
   }
 
@@ -102,23 +105,6 @@ const handleMonsterExperience = async ({
     gainedExperience,
     limit: knowledgeArray.length >= 150,
   };
-};
-
-const getUniqueSubjects = (notes) => {
-  let uniqueSubjects = notes.filter((item, index) => {
-    return index === notes.findIndex((obj) => obj.subject === item.subject);
-  });
-
-  let counter = 0;
-  while (uniqueSubjects.length < 3) {
-    if (
-      uniqueSubjects.findIndex((obj) => obj.id === notes[counter].id) === -1
-    ) {
-      uniqueSubjects.push(notes[counter]);
-    }
-    counter++;
-  }
-  return uniqueSubjects.slice(0, 3);
 };
 
 const cleanNoteTitles = (interaction) => {
@@ -152,7 +138,7 @@ const handleTopics = ({ notes }) => {
   });
 };
 
-const parseEssay = (inputString) => {
+const parseEssay = ({ inputString, monster, subject }) => {
   const lines = inputString.split('\n');
   const result = {
     title: '',
@@ -172,6 +158,9 @@ const parseEssay = (inputString) => {
       result.mainIdea = matchMainIdea[1];
     }
   });
+  if (monster.level === 1) {
+    result.mainIdea = `You believe that your new knowledge of ${subject}, combined with your passion for roller skating, will help your get into Monster Academy, which is the most prestigious academy in all of Monster Town!`;
+  }
   return result;
 };
 
@@ -205,7 +194,7 @@ module.exports = {
         return;
       }
 
-      const monster = await getMonster(interaction.user);
+      const monster = await getMonster({ user: interaction.user });
       let notes = await getNotes(interaction.user, noteTitles);
       if (notes.length < 3) {
         await interaction.editReply({
@@ -217,8 +206,8 @@ module.exports = {
 
       if (
         monster.level === 1 &&
-        notes[0].subject !== 'Banana' &&
-        notes[1].subject !== 'Monster Academy'
+        (notes[0].subject !== 'Banana' ||
+          notes[1].subject !== 'Monster Academy')
       ) {
         notes = [
           notes.find((note) => note.subject === 'Banana'),
@@ -243,6 +232,28 @@ module.exports = {
         topics[2]
       );
 
+      await interaction.editReply({
+        content: 'Hmmm...',
+      });
+
+      const randTopicA = Math.floor(Math.random() * 3);
+      const randTopicB = (randTopicA + 1 + Math.floor(Math.random() * 2)) % 3;
+
+      const { essayMiddleString, essayEndingString, essayAllDoneString } =
+        essayFillers(topics[randTopicA].subject, topics[randTopicB].subject);
+      setTimeout(async () => {
+        await interaction.followUp({
+          content: essayMiddleString,
+        });
+      }, 500);
+      setTimeout(async () => {
+        await interaction.followUp({
+          content: essayEndingString,
+        });
+      }, 100);
+
+      const dmChannel = await interaction.user.createDM();
+      dmChannel.sendTyping();
       const response = await openai.createChatCompletion({
         model: 'gpt-3.5-turbo',
         temperature: 0.05,
@@ -254,13 +265,18 @@ module.exports = {
             essayTitleAndText.text
         ),
       });
-      console.log(
-        'response?.data.choices[0].message.content',
-        response?.data.choices[0].message.content
-      );
-      const essayObject = parseEssay(response?.data.choices[0].message.content);
 
-      await interaction.editReply({
+      const essayObject = parseEssay({
+        inputString: response?.data.choices[0].message.content,
+        monster,
+        subject: topics[2].subject,
+      });
+
+      await interaction.followUp({
+        content: essayAllDoneString,
+      });
+
+      await interaction.followUp({
         embeds: [
           {
             title: essayObject.title,
@@ -339,11 +355,7 @@ module.exports = {
         if (monster.level === 1) {
           setTimeout(async () => {
             await interaction.followUp(
-              `😄🥳 Awesome! My first essay! Thank you so much for helping me out! I can not wait to learn more from you! "${
-                essayObject.title
-              }" will defiantly get the attention of the folks at Monster Academy!  ${removeLastPunctuation(
-                essayObject.mainIdea
-              )}`
+              `😄🥳 Awesome! My first essay! Thank you so much for helping me out! I can not wait to learn more from you! "${essayObject.title}" will defiantly get the attention of the folks at Monster Academy! I believe that my new knowledge of ${topics[2].subject}, combined with my passion for roller skating, will help me get into Monster Academy, which is the most prestigious academy in all of Monster Town!`
             );
           }, 1000);
         } else {

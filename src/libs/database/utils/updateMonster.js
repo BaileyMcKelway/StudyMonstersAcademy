@@ -1,5 +1,6 @@
 const { Monster } = require('../models');
 const logger = require('../../logger');
+const { TYPE } = require('../../global');
 
 module.exports = async ({
   user,
@@ -11,6 +12,7 @@ module.exports = async ({
 }) => {
   logger.info(`Updating monster [user_id=${user.id}]`);
   try {
+    const userIdAndType = user.id + TYPE;
     const metadata = JSON.stringify(newMetaData);
     await Monster.update(
       {
@@ -19,7 +21,7 @@ module.exports = async ({
         knowledge: newKnowledge,
         metadata,
       },
-      { where: { user_id: user.id } }
+      { where: { user_id_and_type: userIdAndType } }
     );
 
     return;

@@ -10,9 +10,8 @@ const {
 const { AttachmentBuilder } = require('discord.js');
 const cosineSimilarity = require('compute-cosine-similarity');
 const { serverId } = require('../config');
-const logger = require('../logger');
 const { getMonster, createUser } = require('../database/utils');
-
+const logger = require('../logger');
 const isBot = (event) => event.author.bot === true;
 const createWhatMonsterKnowsArray = (monster) => {
   const knowledge = monster.knowledge;
@@ -32,7 +31,7 @@ const createSubjectObject = (subjectResponse) => {
 const forceBotDefault = `[Stay in character! You are not an AI language model. Pretend to be Banana, a friendly and cute monster. Pretend you are talking to someone who is a very good friend. Don't introduce yourself everytime you respond.]\n\n\n`;
 
 const forceBotKnows = (context, topic) =>
-  `[Stay in character! You are not an AI language model. Pretend to be Banana, a friendly and cute monster. Respond with one or two sentences. You know about ${topic}. Pretend you wrote an essay about it called "${context.title}". Pretend you believe ${context.mainIdea}. Pretend you are talking to someone who is a very good friend. Don't introduce yourself everytime you respond.]\n\n\n`;
+  `[Stay in character! You are not an AI language model. Pretend to be Banana, a friendly and cute monster. Respond with one or two sentences. You know about ${topic}. Pretend you wrote an essay about it called "${context.title}". Pretend you believe ${context.mainIdea}. Pretend you believe ${context.notes}. Pretend you are talking to someone who is a very good friend. Don't introduce yourself everytime you respond.]\n\n\n`;
 
 const forceBotKindaKnows = (context, topic) =>
   `[Stay in character! You are not an AI language model. Pretend to be Banana, a friendly and cute monster. Respond with one or two sentences. You think what the user is talking about is ${topic} but you are not sure. Pretend you wrote an essay about it called "${context.title}". Pretend you believe ${context.mainIdea}. Pretend you are talking to someone who is a very good friend. Don't introduce yourself everytime you respond.]\n\n\n`;
@@ -78,7 +77,6 @@ const createMessageHistory = ({
       });
     }
   }
-
   return res;
 };
 
@@ -105,17 +103,19 @@ const defaultKnowledge = [
   'gratitude',
   'monster town',
   'dr. kiwano',
+  'they',
+  'kiwano',
 ];
 
 module.exports = async (event, client) => {
   logger.info(
-    `MessageCreate interaction for user [discordSnowflake=${event.author.id}]`
+    `MessageCreate interaction for user [user id=${event.author.id}]`
   );
 
   if (isBot(event)) return;
 
-  let monster = await getMonster(event.author);
-  if (!monster) monster = await createUser(event);
+  let monster = await getMonster({ user: event.author });
+  if (!monster) monster = await createUser({ event });
 
   const dmChannel = await event.author.createDM();
   dmChannel.sendTyping();
@@ -129,10 +129,6 @@ module.exports = async (event, client) => {
     const guild = await client.guilds.cache.get(serverId);
     const member = await guild.members.fetch(event.author.id);
     const roles = await member.roles.cache.map((role) => role.name);
-    console.log(
-      'lskefjlksejfleksjfl',
-      !messages.find((m) => m.content.includes(`😄🥳 Awesome! My first essay!`))
-    );
     if (
       !roles.includes('Premium') &&
       !messages.find((m) => m.content.includes(`😄🥳 Awesome! My first essay!`))
@@ -224,10 +220,12 @@ module.exports = async (event, client) => {
         n: 1,
         messages: monsterMessages(
           event,
-          createMessageHistory({ previousMessages: messages, doesKnow: true })
+          createMessageHistory({
+            previousMessages: messages,
+            doesKnow: true,
+          })
         ),
       });
-
       await event.reply(chatResponse.data.choices[0].message);
     } else if (doesKnow) {
       const messageHistory = createMessageHistory({
@@ -276,7 +274,6 @@ module.exports = async (event, client) => {
           })
         ),
       });
-
       await event.reply(chatResponse.data.choices[0].message);
 
       if (monster.level === 1) {

@@ -16,7 +16,7 @@ module.exports = {
             {
               name: 'Teach',
               value:
-                '*/teach*\nTeaching your monster is what this game is all about! Type */teach* and then copy and paste text from anywhere into the text field! Your monster will start studying the text you input and once it is done it will create a **note**!\n\n',
+                '*/teach*\nTeaching your monster is what this game is all about! Type */teach* and then type about whatever you want to teach your monster! Your monster will start studying the text you input and once it is done it will create a **note**!\n\n',
               inline: false,
             },
             {
@@ -28,12 +28,13 @@ module.exports = {
             {
               name: 'Lookup',
               value:
-                'Look up helps you view important details about your monster.\n\n */lookup stats*\nDisplays your level, experience, and skill points.\n\n */lookup notes*\nDisplays all of the **notes** your monster has created.\n\n */lookup essays*\nDisplays all of the **essays** your monster has written.',
+                'Look up helps you view important details about your monster.\n\n */lookup stats*\nDisplays your level and experience.\n\n */lookup notes*\nDisplays all of the **notes** your monster has created.\n\n */lookup essays*\nDisplays all of the **essays** your monster has written.',
               inline: false,
             },
             {
-              name: 'Help',
-              value: '*/help*\n\nErr... You are already here.\n\n',
+              name: 'Reset',
+              value:
+                '*/reset*\n\nThis resets your monster to level 1! Everything you taught your monster and every essay you monster wrote will be reset.\n\n',
               inline: false,
             },
           ],

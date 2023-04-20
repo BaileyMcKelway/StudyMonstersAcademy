@@ -195,9 +195,7 @@ module.exports = {
           trueOrFalseResponse.data.choices[0].message.content
         );
 
-        if (questionsCache.has(userId)) {
-          questionsCache.delete(userId);
-        }
+        questionsCache.delete(userId);
         questionsCache.set(userId, {
           questions: questionArray,
           text: interaction.options.getString('teach_input'),
