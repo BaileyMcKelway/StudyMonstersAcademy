@@ -6,7 +6,6 @@ const {
   dbHost,
 } = require('../config');
 
-console.log(postgresUser, postgresDb, postgresPassword, dbHost);
 const sequelize = new Sequelize(postgresDb, postgresUser, postgresPassword, {
   host: dbHost,
   dialect: 'postgres',

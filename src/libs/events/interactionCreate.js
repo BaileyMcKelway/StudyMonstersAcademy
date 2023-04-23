@@ -1,9 +1,11 @@
+const path = require('path');
+const { AttachmentBuilder } = require('discord.js');
 const logger = require('../logger');
 const { serverId } = require('../config');
-const { AttachmentBuilder } = require('discord.js');
 const { getMonster, createUser } = require('../database/utils');
 const { TYPE } = require('../global');
 
+const SIX_HOURS_IN_MS = 6 * 60 * 60 * 1000;
 module.exports = async (interaction, client) => {
   try {
     const monster = await getMonster({ user: interaction.user });
@@ -26,16 +28,19 @@ module.exports = async (interaction, client) => {
       await interaction.user.send('Hi!');
       return;
     }
+    if (!monster) return;
 
-    if (monster.level >= 2) {
+    const now = new Date();
+    const createdBy = new Date(monster?.createdAt);
+    const isSixHoursOld = now - createdBy >= SIX_HOURS_IN_MS;
+    if (monster.level >= 2 || isSixHoursOld) {
       const guild = await client.guilds.cache.get(serverId);
-      const member = await guild.members.fetch(interaction.user.id);
-      const roles = await member.roles.cache.map((role) => role.name);
+      const member = await guild.members.fetch(interaction?.user?.id);
+      const roles = await member.roles.cache.map((role) => role?.name);
       if (!roles.includes('Premium')) {
-        const file = new AttachmentBuilder(
-          '/Users/baileymckelway/Documents/VS-STUDIO/StudyMonsterz/src/assets/study_monster_academy.png'
-        );
-
+        const filePath =
+          process.cwd() + '/src/assets/study_monster_academy.png';
+        const file = new AttachmentBuilder(filePath);
         await interaction.reply({
           content: '  ',
           embeds: [
@@ -63,10 +68,10 @@ module.exports = async (interaction, client) => {
       return;
     }
 
-    let command = interaction.client.commands.get(interaction.commandName);
+    let command = interaction?.client?.commands.get(interaction.commandName);
 
     if (!command) {
-      command = interaction.client.commands.get(
+      command = interaction?.client?.commands.get(
         interaction.message.interaction.commandName
       );
     }

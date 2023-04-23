@@ -108,6 +108,7 @@ const defaultKnowledge = [
   'kiwano',
 ];
 
+const SIX_HOURS_IN_MS = 6 * 60 * 60 * 1000;
 module.exports = async (event, client) => {
   logger.info(
     `MessageCreate interaction for user [user id=${event.author.id}]`
@@ -126,7 +127,10 @@ module.exports = async (event, client) => {
   const messages = await channel.messages.fetch({ limit: 10 });
   const knowledge = createWhatMonsterKnowsArray(monster);
 
-  if (monster.level >= 2) {
+  const now = new Date();
+  const createdBy = new Date(monster?.createdAt);
+  const isSixHoursOld = now - createdBy >= SIX_HOURS_IN_MS;
+  if (monster.level >= 2 || isSixHoursOld) {
     const guild = await client.guilds.cache.get(serverId);
     const member = await guild.members.fetch(event.author.id);
     const roles = await member.roles.cache.map((role) => role.name);
@@ -134,9 +138,8 @@ module.exports = async (event, client) => {
       !roles.includes('Premium') &&
       !messages.find((m) => m.content.includes(`😄🥳 Awesome! My first essay!`))
     ) {
-      const file = new AttachmentBuilder(
-        '/Users/baileymckelway/Documents/VS-STUDIO/StudyMonsterz/src/assets/study_monster_academy.png'
-      );
+      const filePath = process.cwd() + '/src/assets/study_monster_academy.png';
+      const file = new AttachmentBuilder(filePath);
 
       await event.reply({
         content: '  ',
@@ -283,9 +286,8 @@ module.exports = async (event, client) => {
       await event.reply(chatResponse.data.choices[0].message);
 
       if (monster.level === 1) {
-        const file = new AttachmentBuilder(
-          '/Users/baileymckelway/Documents/VS-STUDIO/StudyMonsterz/src/assets/teach_example.png'
-        );
+        const filePath = process.cwd() + '/src/assets/teach_example.png';
+        const file = new AttachmentBuilder(filePath);
 
         await event.reply({
           content: '',
