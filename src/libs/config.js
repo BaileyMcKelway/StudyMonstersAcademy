@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 
 dotenv.config({
-  path: `${process.cwd()}/.${process.env.NODE_ENV.replace(' ', '')}.env`,
+  path: `${process.cwd()}/.env.prod`,
 });
 
 module.exports = {
