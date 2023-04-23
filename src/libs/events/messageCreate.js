@@ -15,16 +15,17 @@ const logger = require('../logger');
 const isBot = (event) => event.author.bot === true;
 const createWhatMonsterKnowsArray = (monster) => {
   const knowledge = monster.knowledge;
-  return knowledge.split(',').filter((item) => item !== '');
+  const knowledgeArray = knowledge.split(',').filter((item) => item !== '');
+  return knowledgeArray ? knowledgeArray : [];
 };
 
 const createSubjectObject = (subjectResponse) => {
-  subjectResponse = subjectResponse.data.choices[0].message.content;
-  console.log('subjectResponse', subjectResponse);
+  if (!subjectResponse) return 'none';
+  subjectResponse = subjectResponse?.data?.choices[0].message.content;
+  if (!subjectResponse) subjectResponse = 'none';
   const matchMainSubject = subjectResponse.match(/^Subject: (.+)/);
-  if (!matchMainSubject) {
-    return 'none';
-  }
+  if (!matchMainSubject) return 'none';
+
   return matchMainSubject[1].toLowerCase();
 };
 
@@ -115,15 +116,15 @@ module.exports = async (event, client) => {
   if (isBot(event)) return;
 
   let monster = await getMonster({ user: event.author });
-  if (!monster) monster = await createUser({ event });
+  if (!monster) monster = await createUser({ user: event.author });
+  if (!monster) return;
 
   const dmChannel = await event.author.createDM();
   dmChannel.sendTyping();
 
-  const knowledge = createWhatMonsterKnowsArray(monster);
-
   const channel = event.channel;
   const messages = await channel.messages.fetch({ limit: 10 });
+  const knowledge = createWhatMonsterKnowsArray(monster);
 
   if (monster.level >= 2) {
     const guild = await client.guilds.cache.get(serverId);
@@ -177,6 +178,11 @@ module.exports = async (event, client) => {
         model: 'text-embedding-ada-002',
         input: [event.content, ...knowledge],
       });
+      if (!embeddingResults) {
+        doesKnow = false;
+        kindaKnows = false;
+        return;
+      }
       const embeddings = embeddingResults.data.data.map(
         (entry) => entry.embedding
       );

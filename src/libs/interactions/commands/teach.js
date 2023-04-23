@@ -57,7 +57,6 @@ const teachFillers = () => {
 };
 
 const parseQuestionAndAnwser = (inputString) => {
-  console.log('inputString123', inputString);
   const pairs = inputString.split(/\d+\. /).slice(1);
 
   const outputArray = pairs.map((pair) => {
@@ -125,7 +124,7 @@ module.exports = {
     .addStringOption((option) =>
       option
         .setName('teach_input')
-        .setDescription('Copy and paste text into field to train monster')
+        .setDescription('Copy and paste text into the field to teach monster')
         .setRequired(true)
     ),
 
@@ -190,13 +189,22 @@ module.exports = {
           n: 1,
           messages: trueOrFalseMessages(interaction),
         });
-
+        if (
+          !trueOrFalseResponse ||
+          !trueOrFalseResponse.data ||
+          !trueOrFalseResponse.data.choices ||
+          !trueOrFalseResponse.data.choices[0] ||
+          !trueOrFalseResponse.data.choices[0].message ||
+          !trueOrFalseResponse.data.choices[0].message.content
+        ) {
+          return;
+        }
         const questionArray = parseQuestionAndAnwser(
           trueOrFalseResponse.data.choices[0].message.content
         );
 
-        questionsCache.delete(userId);
-        questionsCache.set(userId, {
+        questionsCache.delete(userId + interaction.id);
+        questionsCache.set(userId + interaction.id, {
           questions: questionArray,
           text: interaction.options.getString('teach_input'),
         });
@@ -215,7 +223,9 @@ module.exports = {
       }
       collector.on('collect', async (m) => {
         if (isNotBot(m) && !collector.checkEnd()) {
-          const questions = questionsCache.get(userId).questions;
+          const questions = questionsCache.get(
+            userId + interaction.id
+          ).questions;
           const filers = teachFillers();
           await m.reply({
             content: filers[0],
@@ -232,11 +242,11 @@ module.exports = {
       collector.on('end', async (collected, reason) => {
         const lastReply = await collected.get(collected.lastKey());
         const collectedSize = collected.size;
-        const userCache = questionsCache.get(userId);
+        const userCache = questionsCache.get(userId + interaction.id);
         if (lastReply && collectedSize === 5) {
           await lastReply.deferReply({ ephemeral: true });
 
-          const userQuestions = questionsCache.get(userId);
+          const userQuestions = questionsCache.get(userId + interaction.id);
           const subjectAndMainIdeas = await openai.createChatCompletion({
             model: 'gpt-3.5-turbo',
             temperature: 0.1,
@@ -295,7 +305,7 @@ module.exports = {
           );
           collector.stop();
         }
-        questionsCache.delete(userId);
+        questionsCache.delete(userId + interaction.id);
       });
     } catch (e) {
       console.log(e);

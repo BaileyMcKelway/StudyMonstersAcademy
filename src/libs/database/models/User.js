@@ -19,19 +19,6 @@ User.init(
       allowNull: false,
       primaryKey: true,
     },
-    discord_channel_id: {
-      type: DataTypes.STRING,
-      unique: true,
-      allowNull: false,
-    },
-    subscription: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    paywall: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
   },
   {
     paranoid: true,

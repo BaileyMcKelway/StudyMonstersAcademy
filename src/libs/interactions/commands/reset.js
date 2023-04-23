@@ -14,7 +14,6 @@ module.exports = {
         .setRequired(true)
     ),
   async execute(interaction) {
-    console.log(interaction.options.getString('reset'));
     if (interaction.options.getString('reset') === 'RESET MY MONSTER') {
       await interaction.reply('Resetting your monster...');
       await resetMonster({ user: interaction.user });

@@ -17,8 +17,20 @@ const historyAndPolitics = (topicA, topicB, topicC) => {
       text: `${topicA.subject}, ${topicB.subject}, and ${topicC.subject} are all very relevant to one another but there are some who deny this! Naysayers say that ${topicA.subject} is not relevant to ${topicB.subject} and ${topicC.subject} but this is not true. It takes a true expert such as myself to see that the fact, "${topicA.ideaB}" is relevant to ${topicB.subject} and ${topicC.subject}. Only time will show these naysayers to be wrong!`,
     },
     {
-      title: `Why ${topicA.subject} Is Important than ${topicB.subject} and ${topicC.subject}`,
+      title: `Why ${topicA.subject} Is More Important than ${topicB.subject} and ${topicC.subject}`,
       text: `${topicA.subject} is oftentimes considered more important than ${topicB.subject} and ${topicC.subject}. This is because ${topicA.ideaA}. Most people don't consider ${topicB.subject} important because ${topicB.ideaA}, which is so trival. As such, it is necessary to consider the importance of ${topicA.subject} in comparison to ${topicB.subject} and ${topicC.subject}.`,
+    },
+    {
+      title: `${topicA.subject}: An Analysis of ${topicB.subject} and ${topicC.subject}`,
+      text: `${topicA.subject} has had a major impact on ${topicB.subject} and ${topicC.subject}, and it is important to analyze that influence. In particular, ${topicA.ideaA} and it has made ${topicB.subject} more ${topicB.ideaA}. This can be seen in how ${topicC.subject} have been ${topicC.ideaA}. It is clear that understanding ${topicA.subject} has a major impact on ${topicB.subject} and ${topicC.subject}.`,
+    },
+    {
+      title: `${topicA.subject}: A Historical Analysis of ${topicB.subject} and ${topicC.subject}`,
+      text: `${topicA.subject} has been a prominent part of history for centuries, and it is important to understand what its influence has been on ${topicB.subject} and ${topicC.subject}. This is particularly true due to ${topicA.ideaA}, which has caused ${topicB.subject} to be ${topicB.ideaA}. As a result of this ${topicC.subject} has never been the same. Understanding the history of ${topicA.subject} is the only way to comprehend its effect on ${topicB.subject} and ${topicC.subject}.`,
+    },
+    {
+      title: `The Dynamics of ${topicB.subject} and ${topicC.subject} in ${topicA.subject}`,
+      text: `${topicA.subject} has always been dominated by the dynamics of ${topicB.subject} and ${topicC.subject}. This is in part due to ${topicA.ideaA}. It has also had a major impact on ${topicC.subject} and how  ${topicC.ideaA}. Understanding the dynamics of ${topicA.subject} is the only way to comprehend its effect on ${topicB.subject} and ${topicC.subject}.`,
     },
   ];
   return historyAndPoliticsEssays[
@@ -40,6 +52,30 @@ const scienceAndTechnology = (topicA, topicB, topicC) => {
       title: `Is the ${topicA.subject} a positive or negative influence on ${topicB.subject} and ${topicC.subject}?`,
       text: `The development of ${topicA.subject} has been one of the most significant technological advancements of our time, but what is it's influence on ${topicB.subject} and ${topicC.subject}? Maybe experts say because ${topicA.ideaA} there will be a positive influence on ${topicB.subject} and ${topicC.subject}. However, others say otherwise are there could be drastic negative effects. Overall, the impact of ${topicA.subject} on ${topicB.subject} and ${topicC.subject} is complex and multifaceted.`,
     },
+    {
+      title: `The Challenges of ${topicA.subject}: Protecting Against ${topicB.subject} and ${topicC.subject}`,
+      text: `As ${topicA.subject} becomes increasingly prevalent, it is important to consider the challenges involved in protecting against ${topicB.subject} and ${topicC.subject}. One challenge is ${topicA.ideaA} which could lead to a potential security risk. Furthermore, with the growing popularity of ${topicB.subject} and ${topicC.subject}, it is becoming increasingly important to ensure that proper security measures are in place to protect against these threats. In order to address this growing concern, it is essential that we prioritize the safety and security of ${topicA.subject} moving forward.`,
+    },
+    {
+      title: `How ${topicA.subject}, ${topicB.subject}, and ${topicC.subject} Are Changing the World`,
+      text: `${topicA.subject}, ${topicB.subject}, and ${topicC.subject} are making a huge impact on the world. One reason is ${topicA.ideaA}. Additionally, ${topicB.subject} is revolutionizing the way we think about ${topicC.subject} largely due to ${topicB.ideaB}. All in all, ${topicA.subject}, ${topicB.subject}, and ${topicC.subject} are transforming the world in exciting and unprecedented ways.`,
+    },
+    {
+      title: `The Ethics of ${topicA.subject}, ${topicB.subject}, and ${topicC.subject}`,
+      text: `As the sophistication of ${topicA.subject}, ${topicB.subject}, and ${topicC.subject} increases, it is important to consider their ethical implications. One ethical concern is ${topicA.ideaA}. Furthermore, it is essential to consider the potential implications of ${topicB.subject} and ${topicC.subject}. For instance ${topicB.ideaA}. And what about the fact that ${topicC.ideaA}. Is this ethical?  In order to ensure that these technologies are used responsibly, it is important to consider their ethical implications moving forward.`,
+    },
+    {
+      title: `The Intersection of ${topicA.subject}, ${topicB.subject}, and ${topicC.subject}`,
+      text: `The intersection of ${topicA.subject}, ${topicB.subject}, and ${topicC.subject} presents a unique opportunity for innovation. One of the most promising possibilities is ${topicA.ideaA}. Additionally, the potential for ${topicB.subject} to work together with ${topicC.subject} is also encouraging. This could allow for the development of ${topicB.ideaA}. As research and development continues to explore the intersection of these disciplines, the possibilities are becoming increasingly exciting.`,
+    },
+    {
+      title: `How ${topicB.subject} and ${topicC.subject} Are Revolutionizing ${topicA.subject}`,
+      text: `The potential for ${topicB.subject} and ${topicC.subject} to revolutionize ${topicA.subject} is only beginning to be revealed. One of the most exciting possibilities is ${topicB.ideaA}. Additionally, ${topicC.subject} is also giving ${topicA.subject} a new lease on life with ${topicC.ideaB}. It is clear that ${topicB.subject} and ${topicC.subject} are creating a new era of possibility for ${topicA.subject}.`,
+    },
+    {
+      title: `From ${topicB.subject} to ${topicC.subject}: A Journey through the History of ${topicA.subject}`,
+      text: `The history of ${topicA.subject} is fascinating and filled with interesting developments. From the ${topicB.ideaA} to the evolution of ${topicC.subject}, this timeline is as diverse as it is captivating. One of the most significant events was the invention of ${topicA.ideaB}. This invention changed the way we think about ${topicC.subject} and paved the way for future developments. As technology progresses, we can only imagine what other exciting discoveries the future holds for ${topicA.subject}.`,
+    },
   ];
 
   return scienceAndTechnologyEssays[
@@ -60,6 +96,30 @@ const artsAndHumanities = (topicA, topicB, topicC) => {
     {
       title: `Exploring the Relationship between ${topicB.subject} and ${topicC.subject} in ${topicA.subject}`,
       text: `${topicA.subject} has become a space for artists to explore ${topicB.subject} and ${topicC.subject}. Artist are drawn to it because ${topicA.ideaA}. The relationship between ${topicB.subject} and ${topicC.subject} is complex and multifacted. This is because ${topicC.ideaA}. Artist continue to explore this relationship and it's impact on ${topicA.subject}.`,
+    },
+    {
+      title: `The Beauty of ${topicA.subject}: An Exploration of ${topicB.subject} and ${topicC.subject}`,
+      text: `${topicA.subject} is a form of art that often depicts the beauty of ${topicB.subject} and ${topicC.subject}. This beauty is seen when ${topicB.ideaA}. Additionally, when ${topicC.ideaB} it allows the viewer to appreciate the beauty of ${topicA.subject}. Therefore, it is essential for artist to explore the beauty of ${topicB.subject} and ${topicC.subject} in their work in order to create a meaningful and powerful experience for the viewer.`,
+    },
+    {
+      title: `The Cultural Significance of ${topicA.subject}: from ${topicB.subject} to ${topicC.subject}`,
+      text: `${topicA.subject} has been a source of cultural significance for many years, from ${topicB.subject} to ${topicC.subject}. This is because ${topicA.ideaA}. As a result ${topicB.ideaA}. Additionally, ${topicC.ideaA}. Therefore, it is clear that ${topicA.subject} has had a major role in the formation of certain cultural identities, and it continues to be a source of inspiration.`,
+    },
+    {
+      title: `The Impact of ${topicA.subject} on Society: From ${topicB.subject} to ${topicC.subject}`,
+      text: `${topicA.subject} has had a major impact on society, from ${topicB.subject} to ${topicC.subject}. This is because ${topicA.ideaA}. For example, in ${topicB.subject}, ${topicB.ideaB}. Similarly, in ${topicC.subject}, ${topicC.ideaB}. Therefore, it is clear that ${topicA.subject} has played a major role in how society perceives and interacts with the world around them.`,
+    },
+    {
+      title: `The Influence of ${topicA.subject} on ${topicB.subject} and ${topicC.subject}: A Comparative Study`,
+      text: `${topicA.subject} has had a great influence on ${topicB.subject} and ${topicC.subject}, a fact that is often overlooked. This is because ${topicA.ideaA}. To better understand this influence, it is important to compare the effects of ${topicA.subject} on both ${topicB.subject} and ${topicC.subject}. For example, ${topicB.ideaA}. Overall, it is clear that ${topicA.subject} has had a major impact on both ${topicB.subject} and ${topicC.subject}, and it's influence should not be ignored.`,
+    },
+    {
+      title: `The Evolution of ${topicA.subject} in the Arts: From ${topicB.subject} to ${topicC.subject}`,
+      text: `The evolution of ${topicA.subject} in the arts has been a long and complex process, from ${topicB.subject} to ${topicC.subject}. This evolution can be attributed to ${topicA.ideaA}. For example, in ${topicB.subject}, ${topicB.ideaB}. Later, in ${topicC.subject},${topicC.ideaB}. It is clear that ${topicA.subject} has evolved greatly in the arts, and as a result, has had a major impact on its evolution.`,
+    },
+    {
+      title: `The Philosophy and Aesthetics of ${topicA.subject} in ${topicB.subject} and ${topicC.subject}`,
+      text: `The philosophy and aesthetics of ${topicA.subject} in ${topicB.subject} and ${topicC.subject} has been an important part of the art world for many years. This is because ${topicA.ideaA}. For example, in ${topicB.subject}, ${topicB.ideaA}. Additionally, in ${topicC.subject}, ${topicC.ideaA}. It is clear that the philosophy and aesthetics of ${topicA.subject} has been a major factor in its evolution and popularity, and should be further studied and discussed.`,
     },
   ];
 
@@ -245,7 +305,7 @@ const sportsAndRecreation = (topicA, topicB, topicC) => {
 const religionAndSpirituality = (topicA, topicB, topicC) => {
   const religionAndSpiritualityEssays = [
     {
-      title: `Why ${topicA.subject} Is Important than ${topicB.subject} and ${topicC.subject}`,
+      title: `Why ${topicA.subject} Is More Important than ${topicB.subject} and ${topicC.subject}`,
       text: `${topicA.subject} is oftentimes considered more important than ${topicB.subject} and ${topicC.subject}. This is because ${topicA.ideaA}. As such, it is necessary to consider the importance of ${topicA.subject} in comparison to ${topicB.subject} and ${topicC.subject}.`,
     },
   ];
