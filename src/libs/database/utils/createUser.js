@@ -38,6 +38,9 @@ module.exports = async ({ user }) => {
 
     return monster;
   } catch (e) {
+    logger.info(
+      `Create user failiure: [user_id=${user.id} type=${TYPE} error: ${e}]`
+    );
     console.log(e);
   }
 };

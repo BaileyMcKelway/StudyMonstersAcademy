@@ -4,7 +4,7 @@ const logger = require('../../logger');
 const { TYPE } = require('../../global');
 
 module.exports = async (user, noteTitles) => {
-  logger.info(`Getting notes [user_id=${user.id}]`);
+  logger.info(`Getting notes [user_id=${user.id} type=${TYPE}]`);
   const userIdAndType = user.id + TYPE;
   if (!noteTitles) {
     try {
@@ -27,6 +27,9 @@ module.exports = async (user, noteTitles) => {
 
       return notes;
     } catch (e) {
+      logger.info(
+        `Get notes failiure: [user_id=${user.id} type=${TYPE} error: ${e}]`
+      );
       console.log(e);
     }
   }

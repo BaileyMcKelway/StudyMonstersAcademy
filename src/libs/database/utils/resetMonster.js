@@ -3,7 +3,7 @@ const logger = require('../../logger');
 const { TYPE } = require('../../global');
 
 module.exports = async ({ user }) => {
-  logger.info(`Updating monster [user_id=${user.id} type=${TYPE}]`);
+  logger.info(`Reseting monster [user_id=${user.id} type=${TYPE}]`);
   try {
     const userIdAndType = user.id + TYPE;
     const metadata = JSON.stringify({});
@@ -51,6 +51,9 @@ module.exports = async ({ user }) => {
 
     return;
   } catch (e) {
+    logger.info(
+      `Resetting monster [user_id=${user.id} type=${TYPE} error:${e}]`
+    );
     console.log(e);
   }
 };

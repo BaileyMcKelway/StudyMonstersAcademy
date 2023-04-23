@@ -10,7 +10,7 @@ module.exports = async ({
   newKnowledge,
   newMetaData,
 }) => {
-  logger.info(`Updating monster [user_id=${user.id}]`);
+  logger.info(`Updating monster [user_id=${user.id} type=${TYPE}]`);
   try {
     const userIdAndType = user.id + TYPE;
     const metadata = JSON.stringify(newMetaData);
@@ -26,6 +26,9 @@ module.exports = async ({
 
     return;
   } catch (e) {
+    logger.info(
+      `Updating monster [user_id=${user.id} type=${TYPE} error:${e}]`
+    );
     console.log(e);
   }
 };

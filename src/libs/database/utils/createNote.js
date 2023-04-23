@@ -18,6 +18,9 @@ module.exports = async ({ user, text, subject, ideas, quality, category }) => {
 
     return note;
   } catch (e) {
+    logger.info(
+      `Create note failiure: [user_id=${user.id} type=${TYPE} error: ${e}]`
+    );
     console.log(e);
   }
 };

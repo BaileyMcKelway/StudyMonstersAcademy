@@ -17,6 +17,9 @@ module.exports = async (user, noteIds) => {
 
     return notes;
   } catch (e) {
+    logger.info(
+      `Delete Notes failiure: [user_id=${user.id} type=${TYPE} error: ${e}]`
+    );
     console.log(e);
   }
 };

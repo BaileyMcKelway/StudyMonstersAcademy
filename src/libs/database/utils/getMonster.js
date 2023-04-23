@@ -11,6 +11,8 @@ module.exports = async ({ user }) => {
 
     return monster.dataValues;
   } catch (e) {
-    console.log(e);
+    logger.info(
+      `Create monster failiure: [user_id=${user.id} type=${TYPE} error: ${e}]`
+    );
   }
 };

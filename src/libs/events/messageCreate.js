@@ -305,6 +305,7 @@ module.exports = async (event, client) => {
       }
     }
   } catch (e) {
+    logger.error(e, 'An error occured executing a message');
     event.reply('Can you say that again?');
     console.log(e);
   }
