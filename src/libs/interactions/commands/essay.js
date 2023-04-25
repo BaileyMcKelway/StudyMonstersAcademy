@@ -125,7 +125,7 @@ const cleanNoteTitles = (interaction) => {
 const createNotesArray = (notes, mainNote) => {
   notes = notes.map((note) => note.dataValues);
   const mainNoteObject = notes.find((note) => note.subject === mainNote);
-  const otherNotes = notes.filter((note) => note.subject !== mainNote);
+  const otherNotes = notes.filter((note) => note.id !== mainNoteObject.id);
   return [mainNoteObject, ...otherNotes];
 };
 
