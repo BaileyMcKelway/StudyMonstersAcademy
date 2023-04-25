@@ -5,6 +5,7 @@ const {
   monsterMessagesAdvanced,
   monsterMessagesEndGame,
   monsterDoesNotKnowMessages,
+  monsterDoesNotKnowExcuseMessages,
   subjectMessages,
 } = require('../chat/constants');
 const Fuse = require('fuse.js');
@@ -310,21 +311,39 @@ module.exports = async (event, client) => {
         if (fuzzyRes.length > 0 && fuzzyRes[0].score <= 0.3) makeExcuse = true;
       }
 
-      const chatResponse = await openai.createChatCompletion({
-        model: 'gpt-3.5-turbo',
-        temperature: 0.99,
-        n: 1,
-        messages: monsterDoesNotKnowMessages(
-          event,
-          createMessageHistory({
-            previousMessages: messages,
-            doesKnow: false,
-            topic: subject,
-            makeExcuse,
-          })
-        ),
-      });
-      await event.reply(chatResponse?.data?.choices[0]?.message);
+      if (makeExcuse) {
+        const chatResponse = await openai.createChatCompletion({
+          model: 'gpt-3.5-turbo',
+          temperature: 0.99,
+          n: 1,
+          messages: monsterDoesNotKnowExcuseMessages(
+            event,
+            createMessageHistory({
+              previousMessages: messages,
+              doesKnow: false,
+              topic: subject,
+              makeExcuse,
+            })
+          ),
+        });
+        await event.reply(chatResponse?.data?.choices[0]?.message);
+      } else {
+        const chatResponse = await openai.createChatCompletion({
+          model: 'gpt-3.5-turbo',
+          temperature: 0.99,
+          n: 1,
+          messages: monsterDoesNotKnowMessages(
+            event,
+            createMessageHistory({
+              previousMessages: messages,
+              doesKnow: false,
+              topic: subject,
+              makeExcuse,
+            })
+          ),
+        });
+        await event.reply(chatResponse?.data?.choices[0]?.message);
+      }
 
       if (monster.level === 1) {
         const filePath = process.cwd() + '/src/assets/teach_example.png';
