@@ -7,12 +7,39 @@ const {
   monsterDoesNotKnowMessages,
   subjectMessages,
 } = require('../chat/constants');
+const Fuse = require('fuse.js');
+const { BLOCKED_CHANNELS } = require('../global');
 const { AttachmentBuilder } = require('discord.js');
 const cosineSimilarity = require('compute-cosine-similarity');
 const { serverId } = require('../config');
 const { getMonster, createUser } = require('../database/utils');
 const logger = require('../logger');
 const isBot = (event) => event.author.bot === true;
+
+const options = {
+  includeScore: true,
+  shouldSort: true,
+  location: 0,
+  distance: 100,
+  maxPatternLength: 32,
+  minMatchCharLength: 1,
+};
+
+const findLastMonsterRoleMessage = (data) => {
+  let lastAssistant = null;
+
+  const dataArr = Array.from(data.values());
+  for (let i = 0; i < dataArr.length; i++) {
+    const curr = dataArr[i];
+    const isBot = curr.author.bot === true;
+    if (isBot) {
+      lastAssistant = curr.content;
+      break;
+    }
+  }
+  return lastAssistant ? lastAssistant.toLowerCase().split(' ') : lastAssistant;
+};
+
 const createWhatMonsterKnowsArray = (monster) => {
   const knowledge = monster.knowledge;
   const knowledgeArray = knowledge.split(',').filter((item) => item !== '');
@@ -29,23 +56,13 @@ const createSubjectObject = (subjectResponse) => {
   return matchMainSubject[1].toLowerCase();
 };
 
-const forceBotDefault = `[Stay in character! You are not an AI language model. Pretend to be Banana, a friendly and cute monster. Pretend you are talking to someone who is a very good friend. Don't introduce yourself everytime you respond.]\n\n\n`;
-
-const forceBotKnows = (context, topic) =>
-  `[Stay in character! You are not an AI language model. Pretend to be Banana, a friendly and cute monster. Respond with one or two sentences. You know about ${topic}. Pretend you wrote an essay about it called "${context.title}". Pretend you believe ${context.mainIdea}. Pretend you believe ${context.notes}. Pretend you are talking to someone who is a very good friend. Don't introduce yourself everytime you respond.]\n\n\n`;
-
-const forceBotKindaKnows = (context, topic) =>
-  `[Stay in character! You are not an AI language model. Pretend to be Banana, a friendly and cute monster. Respond with one or two sentences. You think what the user is talking about is ${topic} but you are not sure. Pretend you wrote an essay about it called "${context.title}". Pretend you believe ${context.mainIdea}. Pretend you are talking to someone who is a very good friend. Don't introduce yourself everytime you respond.]\n\n\n`;
-
-const forceBotDoesNotKnow = (topic) =>
-  `[Stay in character! Pretend you are not an AI language model. Pretend you are Banana, a friendly and cute monster. Pretend you do not know anything about ${topic}. Pretend you are talking to someone who is a very good friend. Don't introduce yourself everytime you respond.]\n\n\n`;
-
 const createMessageHistory = ({
   previousMessages,
   doesKnow,
   kindaKnows,
   context,
   topic,
+  makeExcuse,
 }) => {
   let res = [];
 
@@ -68,6 +85,8 @@ const createMessageHistory = ({
           cont = forceBotKindaKnows(context, topic) + curr.content;
         } else if (doesKnow && !context && !topic) {
           cont = forceBotDefault + curr.content;
+        } else if (makeExcuse && !doesKnow && topic) {
+          cont = forceBotDoesNotKnowExcuse(topic) + curr.content;
         } else {
           cont = forceBotDoesNotKnow(topic) + curr.content;
         }
@@ -108,14 +127,27 @@ const defaultKnowledge = [
   'kiwano',
 ];
 
+const forceBotDefault = `[Stay in character! You are not an AI language model. Pretend to be Banana, a friendly and cute monster. Pretend you are talking to someone who is a very good friend. Don't introduce yourself everytime you respond.]\n\n\n`;
+
+const forceBotKnows = (context, topic) =>
+  `[Stay in character! You are not an AI language model. Pretend to be Banana, a friendly and cute monster. Respond with one or two sentences. You know about ${topic}. Pretend you wrote an essay about it called "${context.title}". Pretend you believe ${context.mainIdea}. Pretend you believe ${context.notes}. Pretend you are talking to someone who is a very good friend. Don't introduce yourself everytime you respond.]\n\n\n`;
+
+const forceBotKindaKnows = (context, topic) =>
+  `[Stay in character! You are not an AI language model. Pretend to be Banana, a friendly and cute monster. Respond with one or two sentences. You think what the user is talking about is ${topic} but you are not sure. Pretend you wrote an essay about it called "${context.title}". Pretend you believe ${context.mainIdea}. Pretend you are talking to someone who is a very good friend. Don't introduce yourself everytime you respond.]\n\n\n`;
+
+const forceBotDoesNotKnow = (topic) =>
+  `[Stay in character! Pretend you are not an AI language model. Pretend you are Banana, a friendly and cute monster. Pretend you do not know anything about ${topic}. Don't introduce yourself everytime you respond.]\n\n\n`;
+
+const forceBotDoesNotKnowExcuse = (topic) =>
+  `[Stay in character! Pretend you are not an AI language model. Pretend you are Banana, a friendly and cute monster. Pretend you don't actually know what ${topic} is and you were just pretending to know. Don't introduce yourself everytime you respond.]\n\n\n`;
+
 const SIX_HOURS_IN_MS = 6 * 60 * 60 * 1000;
 module.exports = async (event, client) => {
+  if (isBot(event)) return;
+  if (BLOCKED_CHANNELS.includes(event.channel.id)) return;
   logger.info(
     `MessageCreate interaction for user [user id=${event.author.id}]`
   );
-
-  if (isBot(event)) return;
-
   let monster = await getMonster({ user: event.author });
   if (!monster) monster = await createUser({ user: event.author });
   if (!monster) return;
@@ -147,7 +179,7 @@ module.exports = async (event, client) => {
           {
             title: 'Subscribe to Study Monsters Academy to continue! 💳',
             description:
-              'You have reached the maximum amount of messages you can send to your study monster. Please subscribe to continue.',
+              'You have reached the maximum amount of messages you can send to your study monster. Please subscribe to continue.\n\nLink:[https://launchpass.com/study-monsters-academy/premium](https://launchpass.com/study-monsters-academy/premium)',
             color: 14588438,
             image: {
               url: 'attachment://study_monster_academy.png',
@@ -161,7 +193,6 @@ module.exports = async (event, client) => {
   }
 
   try {
-    console.log('STARTING SUBJECT');
     const subjectResponse = await openai.createChatCompletion({
       model: 'gpt-3.5-turbo',
       temperature: 0.01,
@@ -211,7 +242,8 @@ module.exports = async (event, client) => {
       }
       ranked = ranked.sort((a, b) => (b.similarity > a.similarity ? 1 : -1));
       doesKnow = ranked[0].similarity >= 0.825;
-      kindaKnows = ranked[0].similarity < 0.825 && ranked[0].similarity >= 0.8;
+      kindaKnows =
+        ranked[0].similarity < 0.825 && ranked[0].similarity >= 0.817;
       if (doesKnow || kindaKnows) {
         const metaData = await JSON.parse(monster.metadata);
         metaDataSubject = metaData[ranked[0].subject];
@@ -270,6 +302,14 @@ module.exports = async (event, client) => {
 
       await event.reply(chatResponse.data.choices[0].message);
     } else {
+      const lastMonsterMessage = findLastMonsterRoleMessage(messages);
+      let makeExcuse = false;
+      if (lastMonsterMessage) {
+        const fuse = new Fuse(lastMonsterMessage, options);
+        const fuzzyRes = fuse.search(subject.toLowerCase());
+        if (fuzzyRes.length > 0 && fuzzyRes[0].score <= 0.3) makeExcuse = true;
+      }
+
       const chatResponse = await openai.createChatCompletion({
         model: 'gpt-3.5-turbo',
         temperature: 0.99,
@@ -280,10 +320,11 @@ module.exports = async (event, client) => {
             previousMessages: messages,
             doesKnow: false,
             topic: subject,
+            makeExcuse,
           })
         ),
       });
-      await event.reply(chatResponse.data.choices[0].message);
+      await event.reply(chatResponse?.data?.choices[0]?.message);
 
       if (monster.level === 1) {
         const filePath = process.cwd() + '/src/assets/teach_example.png';

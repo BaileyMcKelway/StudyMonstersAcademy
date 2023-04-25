@@ -40,7 +40,7 @@ module.exports = {
             {
               name: 'Subscriptions',
               value:
-                "In order to advance your monster's level you must subscribe to Study Monsters Academy. This will allow you to send more messages to your monster.\n\nIf you want to unsubscribe you can do so at any time. Either send a `cancel` message to the LaunchPass bot on #StudyMonstersAcademy or click the Cancel subscription link in invoive email sent to your email.",
+                "In order to advance your monster's level and continue sending messages you must subscribe to Study Monsters Academy. This will allow you to send more messages to your monster.\n\nIf you want to unsubscribe you can do so at any time. Either send a direct messag to the LaunchPass bot on #StudyMonstersAcademy and input `cancel` or click the Cancel subscription link in invoice email sent to you.",
               inline: false,
             },
           ],

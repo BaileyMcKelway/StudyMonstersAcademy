@@ -4,7 +4,6 @@ const letters = require('../../letters/constants');
 const essaySkeletons = require('../../essays/constants');
 const {
   getNotes,
-  getMonster,
   createEssay,
   updateMonster,
   deleteNotes,
