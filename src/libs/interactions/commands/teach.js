@@ -128,7 +128,7 @@ module.exports = {
         .setRequired(true)
     ),
 
-  async execute(interaction) {
+  async execute(interaction, monster) {
     try {
       if (isSlashCmd(interaction)) {
         await interaction.deferReply({ ephemeral: true });
@@ -147,7 +147,7 @@ module.exports = {
 
       if (notes.length >= 3) {
         await interaction.editReply(
-          'I have all the notes I can handle! Time to write an essay! Just type `/essay` to get started!'
+          'I have all the **notes** I can handle! Time to write an **essay**!\n\nType `/lookup Notes` to view all your **notes** and then type `/essay` and input the titles of the notes separated by commas to write an **essay**! The **note** that you want to be the main idea of the **essay** goes first like this,\n\n `/essay Main Idea, Supporting Idea A, Supporting Idea B`'
         );
         return;
       }
@@ -291,8 +291,15 @@ module.exports = {
               },
             ],
           });
-
-          await lastReply.followUp(teachingEndings(subject));
+          if (monster.level === 1) {
+            await lastReply.followUp(
+              'So interesting! Since I already had two **notes** created I now have three total and can write an **essay**!\n\nType `/lookup Notes` to view my **notes**. Then enter `/essay` and input the titles of the notes like this; `Banana, Monster Academy, ' +
+                subject +
+                '` to write an **essay**!'
+            );
+          } else {
+            await lastReply.followUp(teachingEndings(subject));
+          }
           collector.stop();
         } else if (reason === 'time' && collectedSize === 0 && userCache) {
           await interaction.followUp(

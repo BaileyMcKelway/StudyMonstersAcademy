@@ -2,7 +2,7 @@ const historyAndPolitics = (topicA, topicB, topicC) => {
   const historyAndPoliticsEssays = [
     {
       title: `The Rise and Fall of ${topicA.subject} and its Impact on ${topicB.subject} and ${topicC.subject}`,
-      text: `During the 21 century ${topicA.subject} has had many ups and downs and this impacts ${topicB.subject} and ${topicC.subject} in a major way! ${topicB.ideaA} and they wouldn't be that way if it wasn't for ${topicA.subject}. Also, because ${topicA.ideaB} ${topicC.subject} were never the same. ${topicA.subject} has had a major impact on ${topicB.subject} and ${topicC.subject} over the years and it's important to understand how it has affected them.`,
+      text: `During the 21st century ${topicA.subject} has had many ups and downs, and this impacts ${topicB.subject} and ${topicC.subject} in a major way! ${topicB.ideaA} and they wouldn't be that way if it weren't for ${topicA.subject}. Also, because ${topicA.ideaB} ${topicC.subject} were never the same. ${topicA.subject} has had a major impact on ${topicB.subject} and ${topicC.subject} over the years, and it's important to understand how it has affected them.`,
     },
     {
       title: `The ${topicA.subject} and its Significance in ${topicB.subject} and ${topicC.subject}`,

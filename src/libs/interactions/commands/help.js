@@ -22,7 +22,7 @@ module.exports = {
             {
               name: 'Essay',
               value:
-                '`/essay`\nTime to write an essay! Your monster needs three **notes** to create an **essay**. Once you select three notes your monster will start writing the essay. But be careful your monster may get confused while writing!',
+                '`/essay`\nTime to write an **essay**! Your monster needs three **notes** to create an **essay**. Once you select three **notes** your monster will start writing the **essay**. But be careful your monster may get confused while writing!',
               inline: false,
             },
             {
@@ -34,7 +34,7 @@ module.exports = {
             {
               name: 'Reset',
               value:
-                '`/reset`\n\nThis resets your monster to level 1! Everything you taught your monster and every essay you monster wrote will be reset.\n\n',
+                '`/reset`\n\nThis resets your monster to level 1! Everything you taught your monster and every **essay** you monster wrote will be reset.\n\n',
               inline: false,
             },
             {

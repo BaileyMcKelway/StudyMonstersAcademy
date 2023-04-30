@@ -156,7 +156,7 @@ module.exports = {
           }
 
           fields.push({
-            name: note?.dataValues?.subject,
+            name: '*Title: ' + note?.dataValues?.subject + '*',
             value,
           });
         });

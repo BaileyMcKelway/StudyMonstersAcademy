@@ -380,7 +380,7 @@ module.exports = {
         if (monster.level === 1) {
           setTimeout(async () => {
             await interaction.followUp(
-              `😄🥳 Awesome! My first essay! Thank you so much for helping me out! I can not wait to learn more from you! "${essayObject.title}" will defiantly get the attention of the folks at Monster Academy! I believe that my new knowledge of ${topics[2].subject}, combined with my passion for roller skating, will help me get into Monster Academy, which is the most prestigious academy in all of Monster Town!`
+              `😄🥳 Awesome! My first essay! Thank you so much for helping me out! I can not wait to learn more from you! "${essayObject.title}" will definitely get the attention of the folks at Monster Academy! I believe that my new knowledge of ${topics[2].subject}, combined with my passion for roller skating, will help me get into Monster Academy, which is the most prestigious academy in all of Monster Town!`
             );
           }, 2500);
         } else {

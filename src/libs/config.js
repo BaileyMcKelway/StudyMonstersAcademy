@@ -16,4 +16,5 @@ module.exports = {
   openAIKey: process.env.OPENAI_KEY,
   openAIOrganization: process.env.OPENAI_ORGANIZATION,
   serverId: process.env.SERVER_ID,
+  isDev: process.env.IS_DEV === 'true',
 };
