@@ -38,28 +38,28 @@ module.exports = async (interaction, client) => {
     if (monster.level >= 2 || isSixHoursOld) {
       const guild = await client.guilds.cache.get(serverId);
       const member = await guild.members.fetch(interaction?.user?.id);
-      const roles = await member.roles.cache.map((role) => role?.name);
-      if (!roles.includes('Premium')) {
-        const filePath =
-          process.cwd() + '/src/assets/study_monster_academy.png';
-        const file = new AttachmentBuilder(filePath);
-        await interaction.reply({
-          content: '  ',
-          embeds: [
-            {
-              title: 'Subscribe to Study Monsters Academy to continue! 💳',
-              description:
-                'You have reached the maximum amount of messages you can send to your study monster. Please subscribe to continue.\n\nLink:[https://launchpass.com/study-monsters-academy/premium](https://launchpass.com/study-monsters-academy/premium)',
-              color: 14588438,
-              image: {
-                url: 'attachment://study_monster_academy.png',
-              },
-            },
-          ],
-          files: [file],
-        });
-        return;
-      }
+      // const roles = await member.roles.cache.map((role) => role?.name);
+      // if (!roles.includes('Premium')) {
+      //   const filePath =
+      //     process.cwd() + '/src/assets/study_monster_academy.png';
+      //   const file = new AttachmentBuilder(filePath);
+      //   await interaction.reply({
+      //     content: '  ',
+      //     embeds: [
+      //       {
+      //         title: 'Subscribe to Study Monsters Academy to continue! 💳',
+      //         description:
+      //           'You have reached the maximum amount of messages you can send to your study monster. Please subscribe to continue.\n\nLink:[https://launchpass.com/study-monsters-academy/premium](https://launchpass.com/study-monsters-academy/premium)',
+      //         color: 14588438,
+      //         image: {
+      //           url: 'attachment://study_monster_academy.png',
+      //         },
+      //       },
+      //     ],
+      //     files: [file],
+      //   });
+      //   return;
+      // }
     }
 
     if (
