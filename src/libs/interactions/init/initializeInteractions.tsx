@@ -13,7 +13,7 @@ export default async () => {
   const commands: any[] = [];
   const commandFiles = readdirSync(
     path.resolve(process.cwd(), './src/libs/interactions/commands')
-  ).filter((file) => file.endsWith('.js'));
+  );
 
   for (const file of commandFiles) {
     logger.info(`Loading interaction ./src/libs/interactions/commands/${file}`);

@@ -1,176 +1,41 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { openai, essayCreation } from '../../chat/constants';
-import letters from '../../letters/constants';
 import essaySkeletons from '../../essays/constants';
+import { createEssay, deleteNotes } from '../../database/utils';
 import {
-  getNotes,
-  createEssay,
-  updateMonster,
-  deleteNotes,
-} from '../../database/utils';
+  handleMonsterExperience,
+  cleanNoteTitles,
+  handleTopics,
+  parseEssay,
+  validateNoteTitles,
+  fetchNotes,
+  rearrangeNotesForFirstEssay,
+  handleLevelUpNotification,
+  sendLevelUpMessages,
+} from '../utils/essayUtils';
 import { essayFillers } from '../essayConstants';
 import { TYPE } from '../../global';
 
-const removeLastPunctuation = (str: string) => {
-  if (/[.,\/#!$%\^&\*;:{}=\-_`~()]/.test(str.slice(-1))) {
-    str = str.slice(0, -1);
-  }
-  return str;
-};
+interface InteractionOptions {
+  getString: (key: string) => string | null;
+}
 
-const combineSubjects = (subjects: string[]) => {
-  const lastWord = subjects.pop();
-  return subjects.join(', ') + ', and ' + lastWord;
-};
+interface Interaction {
+  deferReply: (arg0: { ephemeral: boolean }) => any;
+  editReply: (arg0: { content: string | undefined }) => any;
+  user?: any;
+  followUp: (arg0: {
+    content?: string | undefined;
+    embeds?: {
+      title: string;
+      description: string;
+      color: number;
+    }[];
+  }) => any;
+  options?: InteractionOptions;
+}
 
-const calculateExperienceGained = ({ notes }: { notes: any[] }) => {
-  const avgQuality =
-    notes.reduce((acc, curr) => {
-      return acc + curr.quality / 100;
-    }, 0) / notes.length;
-
-  return Math.floor(avgQuality * 100);
-};
-
-const createMonsterMetaData = async ({
-  metadata,
-  essayTitle,
-  essayMainIdea,
-  notes,
-}) => {
-  const parsedMetaData = await JSON.parse(metadata);
-  parsedMetaData[notes[0].subject.toLowerCase()] = {
-    title: essayTitle,
-    mainIdea: essayMainIdea,
-    notes: notes[0].ideas.replace('$$', ' Pretend you believe '),
-  };
-  parsedMetaData[notes[1].subject.toLowerCase()] = {
-    title: essayTitle,
-    mainIdea: essayMainIdea,
-    notes: notes[1].ideas.replace('$$', ' Pretend you believe '),
-  };
-  parsedMetaData[notes[2].subject.toLowerCase()] = {
-    title: essayTitle,
-    mainIdea: essayMainIdea,
-    notes: notes[2].ideas.replace('$$', ' Pretend you believe '),
-  };
-  return parsedMetaData;
-};
-
-const handleMonsterExperience = async ({
-  monster,
-  interaction,
-  noteTitles,
-  essayObject,
-  notes,
-}) => {
-  let { level, experience, knowledge, metadata } = monster;
-
-  const knowledgeArray = knowledge.split(',');
-
-  const gainedExperience = calculateExperienceGained({ notes });
-  if (knowledgeArray.length < 150) {
-    metadata = await createMonsterMetaData({
-      metadata,
-      essayTitle: essayObject?.title,
-      essayMainIdea: essayObject?.mainIdea,
-      notes,
-    });
-  }
-
-  noteTitles = noteTitles.map((note) => note.toLowerCase());
-  const newKnowledge = [...new Set([...noteTitles, ...knowledgeArray])].join(
-    ','
-  );
-
-  const sumExperience = gainedExperience + experience;
-  const totalLevelExperience = level * 100 + 100;
-  const hasLeveledUp = sumExperience > totalLevelExperience && level !== 10;
-
-  await updateMonster({
-    user: interaction.user,
-    exp: hasLeveledUp
-      ? sumExperience - totalLevelExperience
-      : level >= 10
-      ? 0
-      : sumExperience,
-    level,
-    hasLeveledUp,
-    newKnowledge,
-    newMetaData: metadata,
-  });
-
-  return {
-    hasLeveledUp,
-    totalLevelExperience,
-    newLevel: level !== 10 ? level + 1 : level,
-    experience,
-    newMetaData: metadata,
-    gainedExperience,
-    limit: knowledgeArray.length >= 150,
-  };
-};
-
-const cleanNoteTitles = (interaction) => {
-  const noteTitles = interaction.options.getString('essay_input').split(',');
-  return noteTitles.map((str) => {
-    if (typeof str === 'string') {
-      return str.trim().slice(0, 1) === ' ' ? str.trim().slice(1) : str.trim();
-    } else {
-      return str;
-    }
-  });
-};
-
-const createNotesArray = (notes, mainNote) => {
-  notes = notes.map((note) => note.dataValues);
-  const mainNoteObject = notes.find((note) => note.subject === mainNote);
-  const otherNotes = notes.filter((note) => note.id !== mainNoteObject.id);
-  return [mainNoteObject, ...otherNotes];
-};
-
-const handleTopics = ({ notes }) => {
-  return notes.map((note) => {
-    const ideas = note?.ideas.split('$$');
-    const noteObject = {
-      subject: note?.subject.toLowerCase(),
-      category: note?.category,
-      ideaA: ideas.length !== 2 ? '' : ideas[0],
-      ideaB: ideas.length !== 2 ? '' : ideas[1],
-    };
-    return noteObject;
-  });
-};
-
-const parseEssay = ({ inputString, monster, subject }) => {
-  const lines = inputString.split('\n');
-  const result = {
-    title: '',
-    essay: '',
-    mainIdea: '',
-    category: '',
-  };
-  lines.forEach((line) => {
-    const matchTitle = line.match(/^Title: (.+)/);
-    const matchEssay = line.match(/^Essay: (.+)/);
-    const matchMainIdea = line.match(/^Main Idea: (.+)/);
-
-    if (matchTitle) {
-      result.title = matchTitle[1];
-    } else if (matchEssay) {
-      result.essay = matchEssay[1];
-    } else if (matchMainIdea) {
-      result.mainIdea = matchMainIdea[1];
-    }
-  });
-  if (monster.level === 1) {
-    result.mainIdea = `You believe that your new knowledge of ${subject}, combined with your passion for roller skating, will help your get into Monster Academy, which is the most prestigious academy in all of Monster Town!`;
-  }
-
-  return result;
-};
-
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('essay')
     .setDescription('Create an essay from three notes')
@@ -182,54 +47,29 @@ module.exports = {
         )
         .setRequired(true)
     ),
-  async execute(interaction, monster) {
+  async execute(interaction: Interaction, monster: { level: number }) {
     try {
       await interaction.deferReply({ ephemeral: true });
       const noteTitles = cleanNoteTitles(interaction);
+      const validationResult = validateNoteTitles(noteTitles);
 
-      if (noteTitles.length > 3) {
-        await interaction.editReply({
-          content: 'You entered to many notes!',
-        });
-        return;
-      }
-      if (noteTitles.length < 3) {
-        await interaction.editReply({
-          content: 'You did not enter enough notes for me to create an essay!',
-        });
+      if (!validationResult.isValid) {
+        await interaction.editReply({ content: validationResult.error });
         return;
       }
 
-      let notes = await getNotes(interaction.user, noteTitles);
-      if (!notes) {
-        await interaction.editReply({
-          content: 'Hmmm looks like one of the notes is missing',
-        });
+      const notesResult = await fetchNotes(interaction.user, noteTitles);
+      if (!notesResult.success) {
+        await interaction.editReply({ content: notesResult.error });
         return;
       }
-      if (notes.length < 3) {
-        await interaction.editReply({
-          content: 'Hmmm looks like one of the notes is missing',
-        });
-        return;
-      }
-      notes = createNotesArray(notes, noteTitles[0]);
 
-      if (
+      let { notes } = notesResult;
+      const isFirstEssay =
         monster.level === 1 &&
-        (notes[0].subject !== TYPE || notes[1].subject !== 'Monster Academy')
-      ) {
-        const monsterNote = notes.find((note) => note.subject === TYPE);
-        const monsterAcademyNote = notes.find(
-          (note) => note.subject === 'Monster Academy'
-        );
-        const otherNote = notes.find(
-          (note) => note.subject !== 'Monster Academy' && note.subject !== TYPE
-        );
-        if (!monsterNote || !monsterAcademyNote || !otherNote) return;
-        notes = [monsterNote, monsterAcademyNote, otherNote];
-      }
+        (notes[0].subject !== TYPE || notes[1].subject !== 'Monster Academy');
 
+      notes = rearrangeNotesForFirstEssay(notes, isFirstEssay, TYPE);
       const topics = handleTopics({ notes });
 
       const currentEssaySkeleton =
@@ -237,7 +77,8 @@ module.exports = {
           ? essaySkeletons.firstEssay
           : essaySkeletons[topics[0].category] || essaySkeletons.default;
 
-      if (topics.length !== 3) return;
+      const isErrorInTopic = topics.length !== 3;
+      if (isErrorInTopic) return;
       const essayTitleAndText = currentEssaySkeleton(
         topics[0],
         topics[1],
@@ -256,10 +97,10 @@ module.exports = {
         ) as any,
       });
 
-      if (
+      const isResponseError =
         !response?.data?.choices ||
-        !response?.data?.choices[0]?.message?.content
-      ) {
+        !response?.data?.choices[0]?.message?.content;
+      if (isResponseError) {
         await interaction.editReply({
           content:
             'Hmmm looks like I am having trouble creating an essay right now. Please try!',
@@ -273,19 +114,15 @@ module.exports = {
 
       const randTopicA = Math.floor(Math.random() * 3);
       const randTopicB = (randTopicA + 1 + Math.floor(Math.random() * 2)) % 3;
-
-      const { essayMiddleString, essayEndingString, essayAllDoneString } =
-        essayFillers(topics[randTopicA].subject, topics[randTopicB].subject);
+      const { essayMiddleString } = essayFillers(
+        topics[randTopicA].subject,
+        topics[randTopicB].subject
+      );
       setTimeout(async () => {
         await interaction.followUp({
           content: essayMiddleString,
         });
       }, 500);
-      // setTimeout(async () => {
-      //   await interaction.followUp({
-      //     content: essayEndingString,
-      //   });
-      // }, 600);
 
       const essayObject = parseEssay({
         inputString: response?.data?.choices[0]?.message?.content,
@@ -293,9 +130,6 @@ module.exports = {
         subject: topics[2]?.subject,
       });
 
-      // await interaction.followUp({
-      //   content: essayAllDoneString,
-      // });
       setTimeout(async () => {
         await interaction.followUp({
           embeds: [
@@ -333,69 +167,25 @@ module.exports = {
       });
       await deleteNotes(interaction.user, noteIds);
 
-      if (hasLeveledUp) {
-        const knowledgeStatement = limit
-          ? ''
-          : ` Also, I now know about ${combineSubjects(noteTitles)}!`;
-        setTimeout(async () => {
-          await interaction.followUp(
-            `Oh wow you leveled up to level ${newLevel} after gaining ${gainedExperience} experience!${knowledgeStatement}`
-          );
-        }, 2000);
-      } else {
-        const knowledgeStatement = limit
-          ? ''
-          : ` I now know about ${combineSubjects(noteTitles)}`;
+      await handleLevelUpNotification({
+        hasLeveledUp,
+        limit,
+        noteTitles,
+        newLevel,
+        gainedExperience,
+        totalLevelExperience,
+        experience,
+        interaction,
+      });
 
-        setTimeout(async () => {
-          await interaction.followUp(
-            `What a fantastic essay!${knowledgeStatement}. Also, I have gained ${gainedExperience} experience! ${
-              totalLevelExperience - (gainedExperience + experience)
-            } more experience points until I level up to level ${newLevel}!`
-          );
-        }, 2000);
-      }
-
-      if (hasLeveledUp && (newLevel % 2 !== 0 || newLevel === 10)) {
-        essayObject.category = topics[0].category;
-        const letter = letters[newLevel]({
-          essay: essayObject,
-          type: TYPE,
-        });
-        setTimeout(async () => {
-          await interaction.followUp(
-            letters.monsterLetterFollowUpIntro[newLevel]
-          );
-        }, 2500);
-
-        setTimeout(async () => {
-          await interaction.followUp(letter);
-        }, 2700);
-
-        setTimeout(async () => {
-          await interaction.followUp(
-            letters.monsterLetterFollowUpResponse[newLevel]
-          );
-        }, 3000);
-      } else {
-        if (monster.level === 1) {
-          setTimeout(async () => {
-            await interaction.followUp(
-              `😄🥳 Awesome! My first essay! Thank you so much for helping me out! I can not wait to learn more from you! "${essayObject.title}" will definitely get the attention of the folks at Monster Academy! I believe that my new knowledge of ${topics[2].subject}, combined with my passion for roller skating, will help me get into Monster Academy, which is the most prestigious academy in all of Monster Town!`
-            );
-          }, 2500);
-        } else {
-          setTimeout(async () => {
-            await interaction.followUp(
-              `Wow! I really hope my essay "${
-                essayObject.title
-              }" has a positive impact on the monster community! ${removeLastPunctuation(
-                essayObject.mainIdea
-              )} is such an interesting concept!`
-            );
-          }, 2500);
-        }
-      }
+      await sendLevelUpMessages({
+        hasLeveledUp,
+        newLevel,
+        monster,
+        essayObject,
+        topics,
+        interaction,
+      });
     } catch (e) {
       console.log(e);
     }

@@ -1,21 +1,20 @@
-import { SlashCommandBuilder } from '@discordjs/builders';
+import help from '../libs/interactions/commands/help'; // Update the path
 
-export default {
-  data: new SlashCommandBuilder()
-    .setName('help')
-    .setDescription('Displays help menu'),
-  async execute(interaction: {
-    reply: (arg0: {
-      content: string;
-      embeds: {
-        title: string;
-        description: string;
-        color: number;
-        fields: { name: string; value: string; inline: boolean }[];
-      }[];
-    }) => any;
-  }) {
-    await interaction.reply({
+describe('Discord Bot Command: Help', () => {
+  let mockReply: jest.Mock;
+
+  beforeEach(() => {
+    mockReply = jest.fn();
+  });
+
+  it('should send the correct reply when execute is called', async () => {
+    const mockInteraction = {
+      reply: mockReply,
+    };
+
+    await help.execute(mockInteraction as any);
+
+    expect(mockReply).toHaveBeenCalledWith({
       content: '',
       embeds: [
         {
@@ -57,5 +56,5 @@ export default {
         },
       ],
     });
-  },
-};
+  });
+});

@@ -28,11 +28,12 @@ client.commands = new Collection();
   });
 
   logger.info(`Connecting to dabatase`);
+
   Object.keys(models).forEach((ele) => {
     models[ele].associate(models);
   });
-
   await db.sync({ force: forceDbReset });
+
   logger.info(`Completed database connection`);
 
   client.on('ready', ready);
@@ -40,7 +41,10 @@ client.commands = new Collection();
     interactionCreate(interaction)
   );
   client.on('messageCreate', (message) => messageCreate(message));
+
   logger.info('Authenticating with Discord');
+
   await client.login(discordToken);
+
   logger.info('Completed Discord authentication');
 })();
