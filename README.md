@@ -1,52 +1,8 @@
 ## About
 
-A template repository using Discord.js to boostrap your Discord Bot with Node.js to use slash commands. This template also includes Sequelize ORM, which means it is compatible with Postgres, MSSQL, Mysql, etc. This template provides the basic structure for building commands, and to get started with your users.
+Study Monsters Academy is a Discord-based game where players teach a simulated monster using OpenAI's GPT. Players guide their monster through various lessons with the goal of getting it admitted into the Monster Academy. It's a unique blend of gaming and education, emphasizing the concept of learning by teaching.
 
-## Requirements
-* Node.js Runtime
-* NPM
-* Some SQL dialect running (MSSQL, Postgresql, MySQL, etc)
-* Discord Bot Token/ClientId
+Discord Link: https://discord.gg/bNkzXUcA5v
 
-## Installation
-Use the package manager NPM to install dependencies
-```
-npm install
-```
-
-Create a new .env file in the root project named either .dev.env or /.NODE_ENV.env -- note that NODE_ENV should be whatever your NODE_ENV you pass into the application is
-
-```env
-DISCORD_TOKEN=YOURDISCORDTOKENHERE
-CLIENT_ID=YOURDISCORDCLIENTIDHERE
-SHOULD_CREATE_COMMANDS=true
-DB_HOST=
-POSTGRES_USER=    
-POSTGRES_DB=
-POSTGRES_PASSWORD=
-FORCE_DB_RESET=true
-```
-Note: should create commands tells the bot whether or not to create the discord slash commands. when rapidly developing, waiting for this call every bot startup can be cumbersome.
-
-If the command shows up, you have succesfully setup the bot!
-
-## Usage
-
-To start the bot, run:
-
-```
-npm start
-```
-
-Add the bot to your Discord server with the link you can generate in the Discord Applications OAuth2 Panel.
-
-Go into the server that your bot is in and type:
-
-```
-/ping
-```
-
-
-## Contributing
-
-Pull requests are welcome! Please open an issue if you have any problems, or create a PR with your suggested changes.
+![study_monsters_desk_logo](https://github.com/BaileyMcKelway/StudyMonstersAcademy/assets/25776618/2b2649a2-0db7-4456-8e11-fbc07a9b550d)
+![Both_studymonsters](https://github.com/BaileyMcKelway/StudyMonstersAcademy/assets/25776618/b23e87e7-562d-4f84-aa62-49d3f82ead38)
