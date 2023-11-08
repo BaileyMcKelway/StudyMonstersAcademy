@@ -1,9 +1,20 @@
 import { Sequelize } from 'sequelize';
-import { postgresUser, postgresDb, postgresPassword, dbHost } from '../config';
+import {
+  postgresUser,
+  postgresDb,
+  postgresPassword,
+  dbHost,
+  dbURL,
+} from '../config';
 
-const sequelize = new Sequelize(postgresDb, postgresUser, postgresPassword, {
-  host: dbHost,
+const sequelize = new Sequelize(dbURL, {
   dialect: 'postgres',
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
+  },
 });
 
 export default sequelize;

@@ -9,6 +9,7 @@ export const discordClientId = process.env.CLIENT_ID;
 export const shouldCreateCommands =
   process.env.SHOULD_CREATE_COMMANDS === 'true';
 export const dbHost = process.env.DB_HOST;
+export const dbURL = process.env.DATABASE_URL || '';
 export const postgresUser = process.env.POSTGRES_USER || '';
 export const postgresDb = process.env.POSTGRES_DB || '';
 export const postgresPassword = process.env.POSTGRES_PASSWORD;
