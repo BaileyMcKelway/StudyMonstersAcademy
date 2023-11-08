@@ -1,52 +1,28 @@
 ## About
 
-A template repository using Discord.js to boostrap your Discord Bot with Node.js to use slash commands. This template also includes Sequelize ORM, which means it is compatible with Postgres, MSSQL, Mysql, etc. This template provides the basic structure for building commands, and to get started with your users.
+Study Monsters Academy is a Discord-based game where players teach a simulated monster using OpenAI's GPT. Players guide their monster through various lessons with the goal of getting it admitted into the Monster Academy. It's a unique blend of gaming and education, emphasizing the concept of learning by teaching.
 
-## Requirements
-* Node.js Runtime
-* NPM
-* Some SQL dialect running (MSSQL, Postgresql, MySQL, etc)
-* Discord Bot Token/ClientId
+Discord Link: https://discord.gg/bNkzXUcA5v
 
-## Installation
-Use the package manager NPM to install dependencies
-```
-npm install
-```
-
-Create a new .env file in the root project named either .dev.env or /.NODE_ENV.env -- note that NODE_ENV should be whatever your NODE_ENV you pass into the application is
-
-```env
-DISCORD_TOKEN=YOURDISCORDTOKENHERE
-CLIENT_ID=YOURDISCORDCLIENTIDHERE
-SHOULD_CREATE_COMMANDS=true
-DB_HOST=
-POSTGRES_USER=    
-POSTGRES_DB=
-POSTGRES_PASSWORD=
-FORCE_DB_RESET=true
-```
-Note: should create commands tells the bot whether or not to create the discord slash commands. when rapidly developing, waiting for this call every bot startup can be cumbersome.
-
-If the command shows up, you have succesfully setup the bot!
-
-## Usage
-
-To start the bot, run:
-
-```
-npm start
-```
-
-Add the bot to your Discord server with the link you can generate in the Discord Applications OAuth2 Panel.
-
-Go into the server that your bot is in and type:
-
-```
-/ping
-```
+![study_monsters_desk_logo](https://github.com/BaileyMcKelway/StudyMonstersAcademy/assets/25776618/c7c335da-0fb7-4a9c-9800-ced91605be38)
+![Both_studymonsters](https://github.com/BaileyMcKelway/StudyMonstersAcademy/assets/25776618/fb62c01b-0d2e-46eb-a11c-f33fb061b867)
 
 
-## Contributing
 
-Pull requests are welcome! Please open an issue if you have any problems, or create a PR with your suggested changes.
+# Examples:
+
+Teach your monster everything is knows!
+
+## Your monster creates notes based on what you teach it.
+![Screenshot_2023-04-23_at_11 24 21_PM](https://github.com/BaileyMcKelway/StudyMonstersAcademy/assets/25776618/445b987d-9f8f-43af-b3c3-61d0f73d9d51)
+
+## Once you have three notes it can write an essay
+![Screenshot_2023-04-23_at_11 27 25_PM](https://github.com/BaileyMcKelway/StudyMonstersAcademy/assets/25776618/4e91a5ef-e440-4e35-97bc-7f37cddfc0a1)
+
+## Then you can have conversations about what you taught it!
+![Screenshot_2023-04-23_at_11 28 27_PM](https://github.com/BaileyMcKelway/StudyMonstersAcademy/assets/25776618/65636d8e-8ed8-4c6a-9c88-ad02e56ff607)
+
+## But be careful because your monsters will learn exactly what you teach it. Even if it is not true!
+![Screenshot_2023-04-23_at_11 58 06_PM](https://github.com/BaileyMcKelway/StudyMonstersAcademy/assets/25776618/9aead45b-9b94-44bb-95e5-745ae49116e7)
+![Screenshot_2023-04-23_at_11 51 11_PM](https://github.com/BaileyMcKelway/StudyMonstersAcademy/assets/25776618/e0ef70aa-52e3-4e71-a00b-b15a2ed3adb4)
+
