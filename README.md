@@ -4,11 +4,6 @@ Study Monsters Academy is a Discord-based game where players teach a simulated m
 
 Discord Link: https://discord.gg/bNkzXUcA5v
 
-![study_monsters_desk_logo](https://github.com/BaileyMcKelway/StudyMonstersAcademy/assets/25776618/c7c335da-0fb7-4a9c-9800-ced91605be38)
-![Both_studymonsters](https://github.com/BaileyMcKelway/StudyMonstersAcademy/assets/25776618/fb62c01b-0d2e-46eb-a11c-f33fb061b867)
-
-
-
 # Examples:
 
 Teach your monster everything is knows!
